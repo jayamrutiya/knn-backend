@@ -1,0 +1,235 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+    id                   BigInt                 @id @default(autoincrement())
+    firstName            String                 @db.VarChar(256)
+    lastName             String                 @db.VarChar(256)
+    userName             String                 @unique @db.VarChar(191)
+    mobileNumber         String                 @unique @db.VarChar(15)
+    password             String                 @db.Text
+    salt                 String                 @db.VarChar(256)
+    address              String                 @db.Text
+    city                 String?                @db.VarChar(256)
+    street               String?                @db.VarChar(256)
+    isSuspended          Boolean                @default(false)
+    lastLoginAt          DateTime?              @db.Timestamp
+    lastLogoutAt         DateTime?              @db.Timestamp
+    createdAt            DateTime               @default(now()) @db.Timestamp(6)
+    updatedAt            DateTime?              @db.Timestamp
+    deletedAt            DateTime?              @db.Timestamp
+    Role                 Role[]
+    UserRole             UserRole[]
+    RefreshToken         RefreshToken[]
+    Category             Category[]
+    Book                 Book[]
+    Subscription         Subscription[]
+    UserSubscription     UserSubscription[]
+    Cart                 Cart[]
+    Order                Order[]
+    UserCurrentBook      UserCurrentBook[]
+    UserBookExchangeLogs UserBookExchangeLogs[]
+}
+
+model Role {
+    id          BigInt     @id @default(autoincrement())
+    name        String     @db.VarChar(256)
+    description String     @db.Text
+    createdAt   DateTime   @default(now()) @db.Timestamp(6)
+    createdBy   BigInt
+    User        User       @relation(references: [id], fields: [createdBy])
+    UserRole    UserRole[]
+}
+
+model UserRole {
+    id     BigInt @id @default(autoincrement())
+    userId BigInt
+    User   User   @relation(references: [id], fields: [userId])
+    roleId BigInt
+    Role   Role   @relation(references: [id], fields: [roleId])
+}
+
+model RefreshToken {
+    id        BigInt   @id @default(autoincrement())
+    userId    BigInt
+    User      User     @relation(references: [id], fields: [userId])
+    Token     String   @db.Text
+    createdAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model Category {
+    id           BigInt         @id @default(autoincrement())
+    categoryName String         @db.VarChar(256)
+    description  String?        @db.Text
+    createdBy    BigInt
+    User         User           @relation(references: [id], fields: [createdBy])
+    type         CategoryType
+    isActivated  Boolean        @default(true)
+    createdAt    DateTime       @default(now()) @db.Timestamp(6)
+    updatedAt    DateTime?      @db.Timestamp
+    BookCategory BookCategory[]
+}
+
+enum CategoryType {
+    BOOK
+    DISCUSSION
+}
+
+model Book {
+    id           BigInt         @id @default(autoincrement())
+    bookName     String         @db.VarChar(256)
+    authorName   String         @db.VarChar(256)
+    isbn         String?        @db.VarChar(256)
+    pages        Int?           @db.Int
+    description  String?        @db.Text
+    price        Decimal        @db.Decimal(10, 2)
+    titleImage   String         @db.Text
+    stock        BigInt         @default(1)
+    createdBy    BigInt
+    verifyBy     BigInt?
+    User         User           @relation(references: [id], fields: [createdBy])
+    isActivated  Boolean        @default(false)
+    createdAt    DateTime       @default(now()) @db.Timestamp(6)
+    updatedAt    DateTime?      @db.Timestamp
+    BookImage    BookImage[]
+    BookCategory BookCategory[]
+    Cart         Cart[]
+    OrderDetail  OrderDetail[]
+}
+
+model BookImage {
+    id        BigInt    @id @default(autoincrement())
+    bookId    BigInt
+    Book      Book      @relation(references: [id], fields: [bookId])
+    image     String    @db.Text
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.Timestamp
+}
+
+model BookCategory {
+    id         BigInt   @id @default(autoincrement())
+    bookId     BigInt
+    Book       Book     @relation(references: [id], fields: [bookId])
+    categoryId BigInt
+    Category   Category @relation(references: [id], fields: [categoryId])
+}
+
+model Subscription {
+    id               BigInt             @id @default(autoincrement())
+    title            String             @db.VarChar(256)
+    description      String?            @db.Text
+    type             SubscriptionType
+    noOfBook         Int                @default(0) @db.Int
+    deposite         Decimal            @default(0.0) @db.Decimal(10, 2)
+    price            Decimal            @db.Decimal(10, 2)
+    createdBy        BigInt
+    User             User               @relation(references: [id], fields: [createdBy])
+    createdAt        DateTime           @default(now()) @db.Timestamp(6)
+    updatedAt        DateTime?          @db.Timestamp
+    UserSubscription UserSubscription[]
+}
+
+enum SubscriptionType {
+    BOOK
+    DEPOSITE
+}
+
+model UserSubscription {
+    id                    BigInt                  @id @default(autoincrement())
+    subscriptionId        BigInt
+    Subscription          Subscription            @relation(references: [id], fields: [subscriptionId])
+    userId                BigInt
+    User                  User                    @relation(references: [id], fields: [userId])
+    title                 String                  @db.VarChar(256)
+    description           String?                 @db.Text
+    type                  SubscriptionType
+    noOfBook              Int                     @default(0) @db.Int
+    deposite              Decimal                 @default(0.0) @db.Decimal(10, 2)
+    price                 Decimal                 @db.Decimal(10, 2)
+    createdAt             DateTime                @default(now()) @db.Timestamp(6)
+    updatedAt             DateTime?               @db.Timestamp
+    UserSubscriptionUsage UserSubscriptionUsage[]
+}
+
+model UserSubscriptionUsage {
+    id                 BigInt           @id @default(autoincrement())
+    userSubscriptionId BigInt
+    UserSubscription   UserSubscription @relation(references: [id], fields: [userSubscriptionId])
+    noOfBookUploaded   Int              @default(0) @db.Int
+    priceDeposited     Decimal          @default(0.0) @db.Decimal(10, 2)
+    createdAt          DateTime         @default(now()) @db.Timestamp(6)
+    updatedAt          DateTime?        @db.Timestamp
+}
+
+model Cart {
+    id        BigInt    @id @default(autoincrement())
+    userId    BigInt
+    User      User      @relation(references: [id], fields: [userId])
+    bookId    BigInt
+    Book      Book      @relation(references: [id], fields: [bookId])
+    quantity  Int       @default(1) @db.Int
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.Timestamp
+}
+
+model Order {
+    id                   BigInt                 @id @default(autoincrement())
+    userId               BigInt
+    User                 User                   @relation(references: [id], fields: [userId])
+    status               OrderStatus            @default(PENDING)
+    deliveryAddress      String                 @db.Text
+    totalAmount          Decimal                @db.Decimal(10, 2)
+    createdAt            DateTime               @default(now()) @db.Timestamp(6)
+    updatedAt            DateTime?              @db.Timestamp
+    OrderDetail          OrderDetail[]
+    UserCurrentBook      UserCurrentBook[]
+    UserBookExchangeLogs UserBookExchangeLogs[]
+}
+
+enum OrderStatus {
+    PENDING
+    DELIVERED
+    ONTHEWAY
+    CANCLE
+}
+
+model OrderDetail {
+    id        BigInt    @id @default(autoincrement())
+    orderId   BigInt
+    Order     Order     @relation(references: [id], fields: [orderId])
+    bookId    BigInt
+    Book      Book      @relation(references: [id], fields: [bookId])
+    quantity  Int       @db.Int
+    price     Decimal   @db.Decimal(10, 2)
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.Timestamp
+}
+
+model UserCurrentBook {
+    id        BigInt    @id @default(autoincrement())
+    orderId   BigInt
+    Order     Order     @relation(references: [id], fields: [orderId])
+    userId    BigInt
+    User      User      @relation(references: [id], fields: [userId])
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.Timestamp
+}
+
+model UserBookExchangeLogs {
+    id              BigInt   @id @default(autoincrement())
+    userId          BigInt
+    User            User     @relation(references: [id], fields: [userId])
+    previousOrderId BigInt
+    latestOrderId   BigInt
+    Order           Order    @relation(references: [id, id], fields: [previousOrderId, latestOrderId])
+    createdAt       DateTime @default(now()) @db.Timestamp(6)
+}
