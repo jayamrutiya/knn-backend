@@ -26,6 +26,7 @@ iocContainer.load(inversify_binding_decorators_1.buildProviderModule());
 iocContainer.bind(types_1.TYPES.LoggerService).to(logger_1.LoggerService);
 iocContainer.bind(types_1.TYPES.DatabaseService).to(db_1.DatabaseService);
 iocContainer.bind(types_1.TYPES.CustomerService).to(CustomerService_1.CustomerService);
+<<<<<<< HEAD
 iocContainer
     .bind(types_1.TYPES.AuthenticationService)
     .to(AuthenticationService_1.AuthenticationService);
@@ -36,6 +37,8 @@ iocContainer
     .bind(types_1.TYPES.SubscriptionService)
     .to(SubscriptionService_1.SubscriptionService);
 iocContainer.bind(types_1.TYPES.BookService).to(BookService_1.BookService);
+=======
+>>>>>>> afa265929b4edc2e2fa9c90cd817008c7e1649aa
 // iocContainer.bind<IRoleService>(TYPES.RoleService).to(RoleService);
 // iocContainer.bind<IOrganisationService>(TYPES.OrganisationService).to(OrganisationService);
 // iocContainer.bind<IPaymentService>(TYPES.PaymentService).to(PaymentService);
@@ -43,9 +46,12 @@ iocContainer.bind(types_1.TYPES.BookService).to(BookService_1.BookService);
 iocContainer
     .bind(types_1.TYPES.CustomerRepository)
     .to(CustomerRepository_1.CustomerRepository);
+<<<<<<< HEAD
 iocContainer.bind(types_1.TYPES.UserRepository).to(UserRepository_1.UserRepository);
 iocContainer.bind(types_1.TYPES.RoleRepository).to(RoleRepository_1.RoleRepository);
 iocContainer
     .bind(types_1.TYPES.SubscriptionRepository)
     .to(SubscriptionRepository_1.SubscriptionRepository);
 iocContainer.bind(types_1.TYPES.BookRepository).to(BookRepository_1.BookRepository);
+=======
+>>>>>>> afa265929b4edc2e2fa9c90cd817008c7e1649aa
