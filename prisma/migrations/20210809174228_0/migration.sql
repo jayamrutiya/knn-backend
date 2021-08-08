@@ -12,6 +12,7 @@ CREATE TABLE `User` (
     `street` VARCHAR(256),
     `isSuspended` BOOLEAN NOT NULL DEFAULT false,
     `lastLoginAt` TIMESTAMP,
+    `lastLogoutAt` TIMESTAMP,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     `updatedAt` TIMESTAMP,
     `deletedAt` TIMESTAMP,

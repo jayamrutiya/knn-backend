@@ -23,6 +23,7 @@ model User {
     street               String?                @db.VarChar(256)
     isSuspended          Boolean                @default(false)
     lastLoginAt          DateTime?              @db.Timestamp
+    lastLogoutAt         DateTime?              @db.Timestamp
     createdAt            DateTime               @default(now()) @db.Timestamp(6)
     updatedAt            DateTime?              @db.Timestamp
     deletedAt            DateTime?              @db.Timestamp
