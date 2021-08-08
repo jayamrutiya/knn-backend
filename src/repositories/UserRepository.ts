@@ -64,7 +64,6 @@ export class UserRepository implements IUserRepository {
           street: true,
           isSuspended: true,
           lastLoginAt: true,
-          lastLogoutAt: true,
           createdAt: true,
           updatedAt: true,
           deletedAt: true,

@@ -89,7 +89,6 @@ let RoleRepository = class RoleRepository {
                     street: false,
                     isSuspended: false,
                     lastLoginAt: false,
-                    lastLogoutAt: false,
                     createdAt: false,
                     updatedAt: false,
                     deletedAt: false,

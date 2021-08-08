@@ -100,7 +100,6 @@ export class RoleRepository implements IRoleRepository {
           street: false,
           isSuspended: false,
           lastLoginAt: false,
-          lastLogoutAt: false,
           createdAt: false,
           updatedAt: false,
           deletedAt: false,

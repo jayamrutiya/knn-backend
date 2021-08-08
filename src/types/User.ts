@@ -30,7 +30,6 @@ export declare type GetUser = {
   street: string | null;
   isSuspended: boolean;
   lastLoginAt: Date | null;
-  lastLogoutAt: Date | null;
   createdAt: Date;
   updatedAt: Date | null;
   deletedAt: Date | null;
