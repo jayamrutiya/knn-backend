@@ -51,10 +51,8 @@ let UserRepository = class UserRepository {
                     city: true,
                     street: true,
                     isSuspended: true,
-                    lastLoginAt: true,
                     createdAt: true,
                     updatedAt: true,
-                    deletedAt: true,
                 },
             });
             return user;
@@ -75,7 +73,6 @@ let UserRepository = class UserRepository {
             const user = await client.user.findFirst({
                 where: {
                     userName,
-                    deletedAt: null,
                 },
             });
             // if (user === null) {
@@ -104,7 +101,7 @@ let UserRepository = class UserRepository {
                     id: userId,
                 },
                 data: {
-                    lastLoginAt: moment_1.default().format(),
+                // lastLoginAt: moment().format(),
                 },
             });
             return user !== null;
@@ -185,7 +182,6 @@ let UserRepository = class UserRepository {
             const user = await client.user.findFirst({
                 where: {
                     id: userId,
-                    deletedAt: null,
                 },
             });
             // if (user === null) {

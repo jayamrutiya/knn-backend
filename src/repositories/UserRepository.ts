@@ -63,10 +63,8 @@ export class UserRepository implements IUserRepository {
           city: true,
           street: true,
           isSuspended: true,
-          lastLoginAt: true,
           createdAt: true,
           updatedAt: true,
-          deletedAt: true,
         },
       });
 
@@ -90,7 +88,6 @@ export class UserRepository implements IUserRepository {
       const user = await client.user.findFirst({
         where: {
           userName,
-          deletedAt: null,
         },
       });
 
@@ -123,7 +120,7 @@ export class UserRepository implements IUserRepository {
           id: userId,
         },
         data: {
-          lastLoginAt: moment().format(),
+          // lastLoginAt: moment().format(),
         },
       });
 
@@ -217,7 +214,6 @@ export class UserRepository implements IUserRepository {
       const user = await client.user.findFirst({
         where: {
           id: userId,
-          deletedAt: null,
         },
       });
 

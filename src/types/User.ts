@@ -29,10 +29,8 @@ export declare type GetUser = {
   city: string | null;
   street: string | null;
   isSuspended: boolean;
-  lastLoginAt: Date | null;
   createdAt: Date;
   updatedAt: Date | null;
-  deletedAt: Date | null;
 };
 
 export declare type AddToCart = {

@@ -88,10 +88,8 @@ let RoleRepository = class RoleRepository {
                     city: false,
                     street: false,
                     isSuspended: false,
-                    lastLoginAt: false,
                     createdAt: false,
                     updatedAt: false,
-                    deletedAt: false,
                     UserRole: {
                         select: {
                             id: true,
