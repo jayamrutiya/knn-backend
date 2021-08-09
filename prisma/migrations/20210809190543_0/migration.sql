@@ -11,11 +11,8 @@ CREATE TABLE `User` (
     `city` VARCHAR(256),
     `street` VARCHAR(256),
     `isSuspended` BOOLEAN NOT NULL DEFAULT false,
-    `lastLoginAt` TIMESTAMP,
-    `lastLogoutAt` TIMESTAMP,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
-    `deletedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     UNIQUE INDEX `User.userName_unique`(`userName`),
     UNIQUE INDEX `User.mobileNumber_unique`(`mobileNumber`),
@@ -61,7 +58,7 @@ CREATE TABLE `Category` (
     `type` ENUM('BOOK', 'DISCUSSION') NOT NULL,
     `isActivated` BOOLEAN NOT NULL DEFAULT true,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -81,7 +78,7 @@ CREATE TABLE `Book` (
     `verifyBy` BIGINT,
     `isActivated` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -92,7 +89,7 @@ CREATE TABLE `BookImage` (
     `bookId` BIGINT NOT NULL,
     `image` TEXT NOT NULL,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -117,7 +114,7 @@ CREATE TABLE `Subscription` (
     `price` DECIMAL(10, 2) NOT NULL,
     `createdBy` BIGINT NOT NULL,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -134,7 +131,7 @@ CREATE TABLE `UserSubscription` (
     `deposite` DECIMAL(10, 2) NOT NULL DEFAULT 0.0,
     `price` DECIMAL(10, 2) NOT NULL,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -146,7 +143,7 @@ CREATE TABLE `UserSubscriptionUsage` (
     `noOfBookUploaded` INTEGER NOT NULL DEFAULT 0,
     `priceDeposited` DECIMAL(10, 2) NOT NULL DEFAULT 0.0,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -158,7 +155,7 @@ CREATE TABLE `Cart` (
     `bookId` BIGINT NOT NULL,
     `quantity` INTEGER NOT NULL DEFAULT 1,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -171,7 +168,7 @@ CREATE TABLE `Order` (
     `deliveryAddress` TEXT NOT NULL,
     `totalAmount` DECIMAL(10, 2) NOT NULL,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -184,7 +181,7 @@ CREATE TABLE `OrderDetail` (
     `quantity` INTEGER NOT NULL,
     `price` DECIMAL(10, 2) NOT NULL,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -195,7 +192,7 @@ CREATE TABLE `UserCurrentBook` (
     `orderId` BIGINT NOT NULL,
     `userId` BIGINT NOT NULL,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updatedAt` TIMESTAMP,
+    `updatedAt` TIMESTAMP NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
