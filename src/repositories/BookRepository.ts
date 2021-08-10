@@ -209,4 +209,29 @@ export class BookRepository implements IBookRepository {
       await this._databaseService.disconnect();
     }
   }
+
+  async bookStatus(bookId: bigint, status: boolean): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const book = await client.book.update({
+        where: {
+          id: bookId,
+        },
+        data: {
+          isActivated: status,
+        },
+      });
+
+      return book !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
 }

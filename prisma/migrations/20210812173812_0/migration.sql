@@ -3,8 +3,9 @@ CREATE TABLE `User` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `firstName` VARCHAR(256) NOT NULL,
     `lastName` VARCHAR(256) NOT NULL,
-    `userName` VARCHAR(191) NOT NULL,
+    `userName` VARCHAR(95) NOT NULL,
     `mobileNumber` VARCHAR(15) NOT NULL,
+    `emailId` VARCHAR(95) NOT NULL,
     `password` TEXT NOT NULL,
     `salt` VARCHAR(256) NOT NULL,
     `address` TEXT NOT NULL,
@@ -15,7 +16,7 @@ CREATE TABLE `User` (
     `updatedAt` DATETIME,
 
     UNIQUE INDEX `User.userName_unique`(`userName`),
-    UNIQUE INDEX `User.mobileNumber_unique`(`mobileNumber`),
+    UNIQUE INDEX `User.emailId_unique`(`emailId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -272,4 +273,7 @@ ALTER TABLE `UserCurrentBook` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`)
 ALTER TABLE `UserBookExchangeLogs` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `UserBookExchangeLogs` ADD FOREIGN KEY (`previousOrderId`, `latestOrderId`) REFERENCES `Order`(`id`, `id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `UserBookExchangeLogs` ADD FOREIGN KEY (`latestOrderId`) REFERENCES `Order`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `UserBookExchangeLogs` ADD FOREIGN KEY (`latestOrderId`) REFERENCES `Order`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -139,4 +139,25 @@ export default class BookController extends BaseController {
       return this.sendErrorResponse(req, res, error);
     }
   }
+
+  async bookStatus(req: express.Request, res: express.Response) {
+    try {
+      const bookId = BigInt(req.params.id);
+      const status = req.query.status === 'true';
+
+      const book = await this._bookService.bookStatus(bookId, status);
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        status
+          ? 'Book activated successfully'
+          : 'Book deactivated successfully',
+        null,
+        null,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }

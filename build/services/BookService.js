@@ -83,6 +83,9 @@ let BookService = class BookService {
     async deleteBook(bookId) {
         return this._bookRepository.deleteBook(bookId);
     }
+    async bookStatus(bookId, status) {
+        return this._bookRepository.bookStatus(bookId, status);
+    }
 };
 BookService = __decorate([
     inversify_1.injectable(),

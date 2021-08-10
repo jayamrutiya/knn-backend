@@ -16,6 +16,8 @@ export interface IUserRepository {
 
   getUserByUserName(userName: string): Promise<User | null>;
 
+  getUserByEmailId(emailId: string): Promise<User | null>;
+
   setLastLogin(userId: bigint): Promise<boolean>;
 
   storeRefreshToken(userId: bigint, token: string): Promise<boolean>;

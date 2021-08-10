@@ -6,6 +6,7 @@ export declare type CreateUser = {
   lastName: string;
   userName: string;
   mobileNumber: string;
+  emailId: string;
   password: string;
   salt: string;
   address: string;
@@ -25,6 +26,7 @@ export declare type GetUser = {
   lastName: string;
   userName: string;
   mobileNumber: string;
+  emailId: string;
   address: string;
   city: string | null;
   street: string | null;

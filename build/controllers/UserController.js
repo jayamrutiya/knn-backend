@@ -46,11 +46,12 @@ let UserController = class UserController extends BaseController_1.default {
             // validate input
             this.validateRequest(req);
             // get parameters
-            const { firstName, lastName, userName, mobileNumber, password, address, city, street, } = req.body;
+            const { firstName, lastName, userName, emailId, mobileNumber, password, address, city, street, } = req.body;
             const newUser = {
                 firstName,
                 lastName,
                 userName,
+                emailId,
                 mobileNumber,
                 password,
                 salt: '',

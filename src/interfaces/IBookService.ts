@@ -13,4 +13,6 @@ export interface IBookService {
   editBook(updateBook: editBook): Promise<boolean>;
 
   deleteBook(bookId: bigint): Promise<boolean>;
+
+  bookStatus(bookId: bigint, status: boolean): Promise<boolean>;
 }

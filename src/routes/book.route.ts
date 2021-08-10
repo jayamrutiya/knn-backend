@@ -23,4 +23,6 @@ router.put('/:id', uploadBookTitleImage.single('titleImage'), (req, res) =>
 
 router.delete('/:id', (req, res) => bookController.deleteBook(req, res));
 
+router.put('/:id/status', (req, res) => bookController.bookStatus(req, res));
+
 export default router;

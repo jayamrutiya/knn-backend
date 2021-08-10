@@ -46,6 +46,7 @@ export class UserRepository implements IUserRepository {
           lastName: newUser.lastName,
           userName: newUser.userName,
           mobileNumber: newUser.mobileNumber,
+          emailId: newUser.emailId,
           password: newUser.password,
           salt: newUser.salt,
           address: newUser.address,
@@ -59,6 +60,7 @@ export class UserRepository implements IUserRepository {
           lastName: true,
           userName: true,
           mobileNumber: true,
+          emailId: true,
           address: true,
           city: true,
           street: true,
@@ -88,6 +90,39 @@ export class UserRepository implements IUserRepository {
       const user = await client.user.findFirst({
         where: {
           userName,
+          OR: {
+            emailId: userName,
+          },
+        },
+      });
+
+      // if (user === null) {
+      //   throw new NotFound(`User not found with userName ${userName}`);
+      // }
+
+      return user;
+    } catch (error) {
+      console.log(error);
+      this._loggerService.getLogger().error(`Error ${error}`);
+      // if (error instanceof NotFound) {
+      //   throw error;
+      // }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async getUserByEmailId(emailId: string): Promise<User | null> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const user = await client.user.findFirst({
+        where: {
+          emailId,
         },
       });
 

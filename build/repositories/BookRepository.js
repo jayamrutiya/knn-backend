@@ -192,6 +192,28 @@ let BookRepository = class BookRepository {
             await this._databaseService.disconnect();
         }
     }
+    async bookStatus(bookId, status) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const book = await client.book.update({
+                where: {
+                    id: bookId,
+                },
+                data: {
+                    isActivated: status,
+                },
+            });
+            return book !== null;
+        }
+        catch (error) {
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
 };
 BookRepository = __decorate([
     inversify_1.injectable(),

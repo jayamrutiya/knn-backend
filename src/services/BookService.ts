@@ -137,4 +137,8 @@ export class BookService implements IBookService {
   async deleteBook(bookId: bigint): Promise<boolean> {
     return this._bookRepository.deleteBook(bookId);
   }
+
+  async bookStatus(bookId: bigint, status: boolean): Promise<boolean> {
+    return this._bookRepository.bookStatus(bookId, status);
+  }
 }
