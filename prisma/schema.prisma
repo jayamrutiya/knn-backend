@@ -23,7 +23,7 @@ model User {
     street               String?                @db.VarChar(256)
     isSuspended          Boolean                @default(false)
     createdAt            DateTime               @default(now()) @db.Timestamp(6)
-    updatedAt            DateTime               @updatedAt @db.Timestamp
+    updatedAt            DateTime?              @db.DateTime
     Role                 Role[]
     UserRole             UserRole[]
     RefreshToken         RefreshToken[]
@@ -72,7 +72,7 @@ model Category {
     type         CategoryType
     isActivated  Boolean        @default(true)
     createdAt    DateTime       @default(now()) @db.Timestamp(6)
-    updatedAt    DateTime       @updatedAt @db.Timestamp
+    updatedAt    DateTime?      @db.DateTime
     BookCategory BookCategory[]
 }
 
@@ -96,7 +96,7 @@ model Book {
     User         User           @relation(references: [id], fields: [createdBy])
     isActivated  Boolean        @default(false)
     createdAt    DateTime       @default(now()) @db.Timestamp(6)
-    updatedAt    DateTime       @updatedAt @db.Timestamp
+    updatedAt    DateTime?      @db.DateTime
     BookImage    BookImage[]
     BookCategory BookCategory[]
     Cart         Cart[]
@@ -104,12 +104,12 @@ model Book {
 }
 
 model BookImage {
-    id        BigInt   @id @default(autoincrement())
+    id        BigInt    @id @default(autoincrement())
     bookId    BigInt
-    Book      Book     @relation(references: [id], fields: [bookId])
-    image     String   @db.Text
-    createdAt DateTime @default(now()) @db.Timestamp(6)
-    updatedAt DateTime @updatedAt @db.Timestamp
+    Book      Book      @relation(references: [id], fields: [bookId])
+    image     String    @db.Text
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.DateTime
 }
 
 model BookCategory {
@@ -131,7 +131,7 @@ model Subscription {
     createdBy        BigInt
     User             User               @relation(references: [id], fields: [createdBy])
     createdAt        DateTime           @default(now()) @db.Timestamp(6)
-    updatedAt        DateTime           @updatedAt @db.Timestamp
+    updatedAt        DateTime?          @db.DateTime
     UserSubscription UserSubscription[]
 }
 
@@ -153,7 +153,7 @@ model UserSubscription {
     deposite              Decimal                 @default(0.0) @db.Decimal(10, 2)
     price                 Decimal                 @db.Decimal(10, 2)
     createdAt             DateTime                @default(now()) @db.Timestamp(6)
-    updatedAt             DateTime                @updatedAt @db.Timestamp
+    updatedAt             DateTime?               @db.DateTime
     UserSubscriptionUsage UserSubscriptionUsage[]
 }
 
@@ -164,18 +164,18 @@ model UserSubscriptionUsage {
     noOfBookUploaded   Int              @default(0) @db.Int
     priceDeposited     Decimal          @default(0.0) @db.Decimal(10, 2)
     createdAt          DateTime         @default(now()) @db.Timestamp(6)
-    updatedAt          DateTime         @updatedAt @db.Timestamp
+    updatedAt          DateTime?        @db.DateTime
 }
 
 model Cart {
-    id        BigInt   @id @default(autoincrement())
+    id        BigInt    @id @default(autoincrement())
     userId    BigInt
-    User      User     @relation(references: [id], fields: [userId])
+    User      User      @relation(references: [id], fields: [userId])
     bookId    BigInt
-    Book      Book     @relation(references: [id], fields: [bookId])
-    quantity  Int      @default(1) @db.Int
-    createdAt DateTime @default(now()) @db.Timestamp(6)
-    updatedAt DateTime @updatedAt @db.Timestamp
+    Book      Book      @relation(references: [id], fields: [bookId])
+    quantity  Int       @default(1) @db.Int
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.DateTime
 }
 
 model Order {
@@ -186,7 +186,7 @@ model Order {
     deliveryAddress      String                 @db.Text
     totalAmount          Decimal                @db.Decimal(10, 2)
     createdAt            DateTime               @default(now()) @db.Timestamp(6)
-    updatedAt            DateTime               @updatedAt @db.Timestamp
+    updatedAt            DateTime?              @db.DateTime
     OrderDetail          OrderDetail[]
     UserCurrentBook      UserCurrentBook[]
     UserBookExchangeLogs UserBookExchangeLogs[]
@@ -200,25 +200,25 @@ enum OrderStatus {
 }
 
 model OrderDetail {
-    id        BigInt   @id @default(autoincrement())
+    id        BigInt    @id @default(autoincrement())
     orderId   BigInt
-    Order     Order    @relation(references: [id], fields: [orderId])
+    Order     Order     @relation(references: [id], fields: [orderId])
     bookId    BigInt
-    Book      Book     @relation(references: [id], fields: [bookId])
-    quantity  Int      @db.Int
-    price     Decimal  @db.Decimal(10, 2)
-    createdAt DateTime @default(now()) @db.Timestamp(6)
-    updatedAt DateTime @updatedAt @db.Timestamp
+    Book      Book      @relation(references: [id], fields: [bookId])
+    quantity  Int       @db.Int
+    price     Decimal   @db.Decimal(10, 2)
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.DateTime
 }
 
 model UserCurrentBook {
-    id        BigInt   @id @default(autoincrement())
+    id        BigInt    @id @default(autoincrement())
     orderId   BigInt
-    Order     Order    @relation(references: [id], fields: [orderId])
+    Order     Order     @relation(references: [id], fields: [orderId])
     userId    BigInt
-    User      User     @relation(references: [id], fields: [userId])
-    createdAt DateTime @default(now()) @db.Timestamp(6)
-    updatedAt DateTime @updatedAt @db.Timestamp
+    User      User      @relation(references: [id], fields: [userId])
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.DateTime
 }
 
 model UserBookExchangeLogs {
