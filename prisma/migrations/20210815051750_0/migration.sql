@@ -217,7 +217,7 @@ CREATE TABLE `Event` (
     `body` TEXT NOT NULL,
     `titleImage` TEXT NOT NULL,
     `startAt` TIMESTAMP(6) NOT NULL,
-    `endAt` TIMESTAMP(6) NOT NULL,
+    `endAt` DATETIME,
     `createdBy` BIGINT NOT NULL,
     `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     `updatedAt` DATETIME,

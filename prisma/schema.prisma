@@ -242,7 +242,7 @@ model Event {
     body       String    @db.Text
     titleImage String    @db.Text
     startAt    DateTime  @db.Timestamp(6)
-    endAt      DateTime  @db.Timestamp(6)
+    endAt      DateTime? @db.DateTime
     createdBy  BigInt
     User       User      @relation(references: [id], fields: [createdBy])
     createdAt  DateTime  @default(now()) @db.Timestamp(6)
