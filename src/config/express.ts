@@ -34,6 +34,9 @@ app.use(`${ENV.API_ROOT}/users`, routers.userRouter);
 app.use(`${ENV.API_ROOT}/subscriptions`, routers.subscriptionRouter);
 app.use(`${ENV.API_ROOT}/roles`, routers.rolerRouter);
 app.use(`${ENV.API_ROOT}/books`, routers.bookRouter);
+app.use(`${ENV.API_ROOT}/events`, routers.eventRouter);
+app.use(`${ENV.API_ROOT}/blogs`, routers.blogRouter);
+app.use(`${ENV.API_ROOT}/discussions`, routers.discussionRouter);
 // Use error handling middleware
 app.use(errorHandler);
 

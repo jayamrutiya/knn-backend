@@ -5,6 +5,9 @@ import authenticationRouter from './authentication.route';
 import subscriptionRouter from './subscription.route';
 import rolerRouter from './role.route';
 import bookRouter from './book.route';
+import eventRouter from './event.route';
+import blogRouter from './blog.route';
+import discussionRouter from './discussion.route';
 
 export default {
   testRouter,
@@ -14,4 +17,7 @@ export default {
   subscriptionRouter,
   rolerRouter,
   bookRouter,
+  eventRouter,
+  blogRouter,
+  discussionRouter,
 };

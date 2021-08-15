@@ -10,6 +10,9 @@ export const TYPES = {
   RoleService: Symbol('IRoleService'),
   SubscriptionService: Symbol('ISubscriptionService'),
   BookService: Symbol('IBookService'),
+  EventService: Symbol('IEventService'),
+  BlogService: Symbol('IBlogService'),
+  DiscussionService: Symbol('IDiscussionService'),
   // RoleService: Symbol('IRoleService'),
   // PaymentService: Symbol('IPaymentService'),
   // OrganisationService: Symbol('IOrganisationService'),
@@ -23,4 +26,7 @@ export const TYPES = {
   // PaymentRepository: Symbol('IPaymentRepository'),
   SubscriptionRepository: Symbol('ISubscriptionRepository'),
   BookRepository: Symbol('IBookRepository'),
+  EventRepository: Symbol('IEventRepository'),
+  BlogRepository: Symbol('IBlogRepository'),
+  DiscussionRepository: Symbol('IDiscussionRepository'),
 };

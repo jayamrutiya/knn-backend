@@ -30,6 +30,18 @@ import { BookService } from '../services/BookService';
 import { IBookService } from '../interfaces/IBookService';
 import { BookRepository } from '../repositories/BookRepository';
 import IBookRepository from '../interfaces/IBookRepository';
+import { IEventService } from '../interfaces/IEventService';
+import { EventService } from '../services/EventService';
+import { IEventRepository } from '../interfaces/IEventRepository';
+import { EventRepository } from '../repositories/EventRepository';
+import IBlogService from '../interfaces/IBlogService';
+import { BlogService } from '../services/BlogService';
+import IBlogRepository from '../interfaces/IBlogRepository';
+import { BlogRepository } from '../repositories/BlogRepository';
+import { IDiscussionService } from '../interfaces/IDiscussionService';
+import { DiscussionService } from '../services/DiscussionService';
+import { IDiscussionRepository } from '../interfaces/IDiscussionRepository';
+import { DiscussionRepository } from '../repositories/DiscussionRepository';
 
 const iocContainer = new Container();
 
@@ -51,6 +63,11 @@ iocContainer
   .bind<ISubscriptionService>(TYPES.SubscriptionService)
   .to(SubscriptionService);
 iocContainer.bind<IBookService>(TYPES.BookService).to(BookService);
+iocContainer.bind<IEventService>(TYPES.EventService).to(EventService);
+iocContainer.bind<IBlogService>(TYPES.BlogService).to(BlogService);
+iocContainer
+  .bind<IDiscussionService>(TYPES.DiscussionService)
+  .to(DiscussionService);
 // iocContainer.bind<IRoleService>(TYPES.RoleService).to(RoleService);
 // iocContainer.bind<IOrganisationService>(TYPES.OrganisationService).to(OrganisationService);
 
@@ -66,6 +83,11 @@ iocContainer
   .bind<ISubscriptionRepository>(TYPES.SubscriptionRepository)
   .to(SubscriptionRepository);
 iocContainer.bind<IBookRepository>(TYPES.BookRepository).to(BookRepository);
+iocContainer.bind<IEventRepository>(TYPES.EventRepository).to(EventRepository);
+iocContainer.bind<IBlogRepository>(TYPES.BlogRepository).to(BlogRepository);
+iocContainer
+  .bind<IDiscussionRepository>(TYPES.DiscussionRepository)
+  .to(DiscussionRepository);
 // iocContainer.bind<IRoleRepository>(TYPES.RoleRepository).to(RoleRepository);
 // iocContainer.bind<IOrganisationRepository>(TYPES.OrganisationRepository).to(OrganisationRepository);
 
