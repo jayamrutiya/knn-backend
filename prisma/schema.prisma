@@ -230,7 +230,7 @@ model UserBookExchangeLogs {
     User            User     @relation(references: [id], fields: [userId])
     previousOrderId BigInt
     latestOrderId   BigInt
-    Order           Order    @relation("asd", references: [id], fields: [latestOrderId])
+    Order           Order    @relation("asd", references: [id], fields: [previousOrderId])
     OrderA          Order    @relation(references: [id], fields: [latestOrderId])
     createdAt       DateTime @default(now()) @db.Timestamp(6)
 }
