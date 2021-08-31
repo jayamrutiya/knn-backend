@@ -6,7 +6,11 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import { IRoleRepository } from '../interfaces/IRoleRepository';
 import { ISubscriptionRepository } from '../interfaces/ISubscriptionRepository';
 import { IUserRepository } from '../interfaces/IUserRepository';
-import { GetDiscussion, NewDiscussion } from '../types/Discussion';
+import {
+  GetDiscussion,
+  NewDiscussion,
+  UpdateDiscussion,
+} from '../types/Discussion';
 
 @injectable()
 export class DiscussionService implements IDiscussionService {
@@ -39,5 +43,17 @@ export class DiscussionService implements IDiscussionService {
 
   async creatDiscussion(newDiscussion: NewDiscussion): Promise<GetDiscussion> {
     return this._discussionRepository.creatDiscussion(newDiscussion);
+  }
+
+  async updateDiscussion(updateDiscussion: UpdateDiscussion): Promise<boolean> {
+    return this._discussionRepository.updateDiscussion(updateDiscussion);
+  }
+
+  async getDiscussion(discussionId: bigint): Promise<GetDiscussion> {
+    return this._discussionRepository.getDiscussion(discussionId);
+  }
+
+  async getAllDiscussion(): Promise<GetDiscussion[]> {
+    return this._discussionRepository.getAllDiscussion();
   }
 }

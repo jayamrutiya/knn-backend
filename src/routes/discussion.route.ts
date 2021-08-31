@@ -22,4 +22,12 @@ router.post('/', uploadBookTitleImage.single('titleImage'), (req, res) =>
   discussionController.createDiscussion(req, res),
 );
 
+router.put('/:id', uploadBookTitleImage.single('titleImage'), (req, res) =>
+  discussionController.updateDiscussion(req, res),
+);
+
+router.get('/:id', (req, res) => discussionController.getDiscussion(req, res));
+
+router.get('/', (req, res) => discussionController.getAllDiscussion(req, res));
+
 export default router;

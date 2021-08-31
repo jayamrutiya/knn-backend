@@ -3,7 +3,7 @@ import { IDiscussionService } from '../interfaces/IDiscussionService';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import BaseController from './BaseController';
 import * as express from 'express';
-import { NewDiscussion } from '../types/Discussion';
+import { NewDiscussion, UpdateDiscussion } from '../types/Discussion';
 
 @injectable()
 export default class DiscussionController extends BaseController {
@@ -44,6 +44,76 @@ export default class DiscussionController extends BaseController {
         'Discussion created successfully',
         {
           length: 1,
+        },
+        discussion,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async updateDiscussion(req: express.Request, res: express.Response) {
+    try {
+      const { question, createdBy, categoryId } = req.body;
+
+      const updateDiscussion: UpdateDiscussion = {
+        id: BigInt(req.params.id),
+        titleImage: req.file
+          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          : 'no image',
+        question,
+        createdBy: BigInt(createdBy),
+        categoryId: BigInt(categoryId),
+      };
+
+      const discussion = await this._discussionService.updateDiscussion(
+        updateDiscussion,
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        'Discussion updated successfully',
+        null,
+        null,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async getDiscussion(req: express.Request, res: express.Response) {
+    try {
+      const discussionId = BigInt(req.params.id);
+
+      const discussion = await this._discussionService.getDiscussion(
+        discussionId,
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        {
+          length: 1,
+        },
+        discussion,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async getAllDiscussion(req: express.Request, res: express.Response) {
+    try {
+      const discussion = await this._discussionService.getAllDiscussion();
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        {
+          length: discussion.length,
         },
         discussion,
       );

@@ -17,3 +17,13 @@ export declare type NewDiscussion = {
   //   createdAt: Date;
   //   updatedAt: Date | null;
 };
+
+export declare type UpdateDiscussion = {
+  id: bigint;
+  titleImage: string;
+  question: string;
+  createdBy: bigint;
+  categoryId: bigint;
+  //   createdAt: Date;
+  //   updatedAt: Date | null;
+};
