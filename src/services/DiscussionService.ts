@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../config/types';
+import { NotFound } from '../errors/NotFound';
 import { IDiscussionRepository } from '../interfaces/IDiscussionRepository';
 import { IDiscussionService } from '../interfaces/IDiscussionService';
 import { ILoggerService } from '../interfaces/ILoggerService';
@@ -8,6 +9,7 @@ import { ISubscriptionRepository } from '../interfaces/ISubscriptionRepository';
 import { IUserRepository } from '../interfaces/IUserRepository';
 import {
   GetDiscussion,
+  GetDiscussionAnswer,
   NewDiscussion,
   UpdateDiscussion,
 } from '../types/Discussion';
@@ -55,5 +57,22 @@ export class DiscussionService implements IDiscussionService {
 
   async getAllDiscussion(): Promise<GetDiscussion[]> {
     return this._discussionRepository.getAllDiscussion();
+  }
+
+  async createAnswer(
+    discussionId: bigint,
+    answeredBy: bigint,
+    answer: string,
+  ): Promise<GetDiscussionAnswer> {
+    const user = await this._userRepository.getUserById(answeredBy);
+    if (user === null) {
+      throw new NotFound(`User not found with id ${answeredBy}`);
+    }
+    await this._discussionRepository.getDiscussion(discussionId);
+    return this._discussionRepository.createAnswer(
+      discussionId,
+      answeredBy,
+      answer,
+    );
   }
 }

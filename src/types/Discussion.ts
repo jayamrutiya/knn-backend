@@ -6,6 +6,8 @@ export declare type GetDiscussion = {
   categoryId: bigint;
   createdAt: Date;
   updatedAt: Date | null;
+  User?: any;
+  DiscussionAnswer?: any;
 };
 
 export declare type NewDiscussion = {
@@ -26,4 +28,12 @@ export declare type UpdateDiscussion = {
   categoryId: bigint;
   //   createdAt: Date;
   //   updatedAt: Date | null;
+};
+
+export declare type GetDiscussionAnswer = {
+  id: bigint;
+  discussionId: bigint;
+  answeredBy: bigint;
+  answer: string;
+  createdAt: Date;
 };

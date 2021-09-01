@@ -284,5 +284,6 @@ model DiscussionAnswer {
     Discussion   Discussion @relation(references: [id], fields: [discussionId])
     answeredBy   BigInt
     User         User       @relation(references: [id], fields: [answeredBy])
+    answer       String     @db.Text
     createdAt    DateTime   @default(now()) @db.Timestamp(6)
 }

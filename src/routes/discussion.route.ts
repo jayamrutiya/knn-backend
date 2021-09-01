@@ -30,4 +30,8 @@ router.get('/:id', (req, res) => discussionController.getDiscussion(req, res));
 
 router.get('/', (req, res) => discussionController.getAllDiscussion(req, res));
 
+router.post('/answer', (req, res) =>
+  discussionController.createAnswer(req, res),
+);
+
 export default router;

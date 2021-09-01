@@ -1,5 +1,6 @@
 import {
   GetDiscussion,
+  GetDiscussionAnswer,
   NewDiscussion,
   UpdateDiscussion,
 } from '../types/Discussion';
@@ -12,4 +13,10 @@ export interface IDiscussionService {
   getDiscussion(discussionId: bigint): Promise<GetDiscussion>;
 
   getAllDiscussion(): Promise<GetDiscussion[]>;
+
+  createAnswer(
+    discussionId: bigint,
+    answeredBy: bigint,
+    answer: string,
+  ): Promise<GetDiscussionAnswer>;
 }

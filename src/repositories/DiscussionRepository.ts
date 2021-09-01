@@ -8,6 +8,7 @@ import { IDiscussionRepository } from '../interfaces/IDiscussionRepository';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import {
   GetDiscussion,
+  GetDiscussionAnswer,
   NewDiscussion,
   UpdateDiscussion,
 } from '../types/Discussion';
@@ -96,6 +97,14 @@ export class DiscussionRepository implements IDiscussionRepository {
         where: {
           id: discussionId,
         },
+        include: {
+          User: true,
+          DiscussionAnswer: {
+            include: {
+              User: true,
+            },
+          },
+        },
       });
 
       if (discussion === null) {
@@ -121,9 +130,49 @@ export class DiscussionRepository implements IDiscussionRepository {
       // Get the database client
       const client = this._databaseService.Client();
 
-      const discussion = await client.discussion.findMany({});
+      const discussion = await client.discussion.findMany({
+        include: {
+          User: true,
+          DiscussionAnswer: {
+            include: {
+              User: true,
+            },
+          },
+        },
+      });
 
       return discussion;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async createAnswer(
+    discussionId: bigint,
+    answeredBy: bigint,
+    answer: string,
+  ): Promise<GetDiscussionAnswer> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const discissionAnswer = await client.discussionAnswer.create({
+        data: {
+          discussionId,
+          answeredBy,
+          answer,
+        },
+      });
+
+      return discissionAnswer;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       if (error instanceof NotFound) {

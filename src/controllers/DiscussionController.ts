@@ -121,4 +121,28 @@ export default class DiscussionController extends BaseController {
       return this.sendErrorResponse(req, res, error);
     }
   }
+
+  async createAnswer(req: express.Request, res: express.Response) {
+    try {
+      const { discussionId, answeredBy, answer } = req.body;
+
+      const discussionAnswer = await this._discussionService.createAnswer(
+        BigInt(discussionId),
+        BigInt(answeredBy),
+        answer,
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        {
+          length: 1,
+        },
+        discussionAnswer,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }
