@@ -3,11 +3,17 @@ import IBookRepository from '../interfaces/IBookRepository';
 import { IBookService } from '../interfaces/IBookService';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { inject, injectable } from 'inversify';
-import { createBook, editBook, GetBookById } from '../types/Book';
+import {
+  createBook,
+  editBook,
+  GetBookById,
+  GetBookReview,
+} from '../types/Book';
 import { BadRequest } from '../errors/BadRequest';
 import { IRoleRepository } from '../interfaces/IRoleRepository';
 import { IUserRepository } from '../interfaces/IUserRepository';
 import { ISubscriptionRepository } from '../interfaces/ISubscriptionRepository';
+import { NotFound } from '../errors/NotFound';
 
 @injectable()
 export class BookService implements IBookService {
@@ -140,5 +146,42 @@ export class BookService implements IBookService {
 
   async bookStatus(bookId: bigint, status: boolean): Promise<boolean> {
     return this._bookRepository.bookStatus(bookId, status);
+  }
+
+  async doBookLikeDislike(
+    bookId: bigint,
+    userId: bigint,
+    isLiked: boolean,
+  ): Promise<boolean> {
+    const user = await this._userRepository.getUserById(userId);
+    if (user === null) {
+      throw new NotFound(`User not found with id ${userId}`);
+    }
+    await this._bookRepository.getBookById(bookId);
+    const bookLikeDislike = await this._bookRepository.getBookLikeDislike(
+      bookId,
+      userId,
+    );
+    if (bookLikeDislike !== null) {
+      return this._bookRepository.updateBookLikeDislike(
+        bookLikeDislike.id,
+        isLiked,
+      );
+    }
+    return this._bookRepository.doBookLikeDislike(bookId, userId, isLiked);
+  }
+
+  async addBookReview(
+    bookId: bigint,
+    userId: bigint,
+    review: string,
+  ): Promise<GetBookReview> {
+    const user = await this._userRepository.getUserById(userId);
+    if (user === null) {
+      throw new NotFound(`User not found with id ${userId}`);
+    }
+    await this._bookRepository.getBookById(bookId);
+
+    return this._bookRepository.addBookReview(bookId, userId, review);
   }
 }

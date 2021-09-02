@@ -25,4 +25,10 @@ router.delete('/:id', (req, res) => bookController.deleteBook(req, res));
 
 router.put('/:id/status', (req, res) => bookController.bookStatus(req, res));
 
+router.post('/like/dislike', (req, res) =>
+  bookController.doBookLikeDislike(req, res),
+);
+
+router.post('/review', (req, res) => bookController.addBookReview(req, res));
+
 export default router;

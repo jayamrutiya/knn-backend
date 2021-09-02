@@ -40,6 +40,9 @@ model User {
     Blog                 Blog[]
     Discussion           Discussion[]
     DiscussionAnswer     DiscussionAnswer[]
+    BookLikeDislike      BookLikeDislike[]
+    BookReview           BookReview[]
+    BookRating           BookRating[]
 }
 
 model Role {
@@ -88,25 +91,28 @@ enum CategoryType {
 }
 
 model Book {
-    id           BigInt         @id @default(autoincrement())
-    bookName     String         @db.VarChar(256)
-    authorName   String         @db.VarChar(256)
-    isbn         String?        @db.VarChar(256)
-    pages        Int?           @db.Int
-    description  String?        @db.Text
-    price        Decimal        @db.Decimal(10, 2)
-    titleImage   String         @db.Text
-    stock        BigInt         @default(1)
-    createdBy    BigInt
-    verifyBy     BigInt?
-    User         User           @relation(references: [id], fields: [createdBy])
-    isActivated  Boolean        @default(false)
-    createdAt    DateTime       @default(now()) @db.Timestamp(6)
-    updatedAt    DateTime?      @db.DateTime
-    BookImage    BookImage[]
-    BookCategory BookCategory[]
-    Cart         Cart[]
-    OrderDetail  OrderDetail[]
+    id              BigInt            @id @default(autoincrement())
+    bookName        String            @db.VarChar(256)
+    authorName      String            @db.VarChar(256)
+    isbn            String?           @db.VarChar(256)
+    pages           Int?              @db.Int
+    description     String?           @db.Text
+    price           Decimal           @db.Decimal(10, 2)
+    titleImage      String            @db.Text
+    stock           BigInt            @default(1)
+    createdBy       BigInt
+    verifyBy        BigInt?
+    User            User              @relation(references: [id], fields: [createdBy])
+    isActivated     Boolean           @default(false)
+    createdAt       DateTime          @default(now()) @db.Timestamp(6)
+    updatedAt       DateTime?         @db.DateTime
+    BookImage       BookImage[]
+    BookCategory    BookCategory[]
+    Cart            Cart[]
+    OrderDetail     OrderDetail[]
+    BookLikeDislike BookLikeDislike[]
+    BookReview      BookReview[]
+    BookRating      BookRating[]
 }
 
 model BookImage {
@@ -124,6 +130,39 @@ model BookCategory {
     Book       Book     @relation(references: [id], fields: [bookId])
     categoryId BigInt
     Category   Category @relation(references: [id], fields: [categoryId])
+}
+
+model BookLikeDislike {
+    id        BigInt    @id @default(autoincrement())
+    bookId    BigInt
+    Book      Book      @relation(references: [id], fields: [bookId])
+    userId    BigInt
+    User      User      @relation(references: [id], fields: [userId])
+    isLiked   Boolean
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.DateTime
+}
+
+model BookReview {
+    id        BigInt    @id @default(autoincrement())
+    bookId    BigInt
+    Book      Book      @relation(references: [id], fields: [bookId])
+    userId    BigInt
+    User      User      @relation(references: [id], fields: [userId])
+    review    String    @db.Text
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.DateTime
+}
+
+model BookRating {
+    id        BigInt    @id @default(autoincrement())
+    bookId    BigInt
+    Book      Book      @relation(references: [id], fields: [bookId])
+    userId    BigInt
+    User      User      @relation(references: [id], fields: [userId])
+    rating    Int       @db.Int
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt DateTime? @db.DateTime
 }
 
 model Subscription {

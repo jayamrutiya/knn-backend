@@ -84,15 +84,21 @@ export class UserRepository implements IUserRepository {
 
   async getUserByUserName(userName: string): Promise<User | null> {
     try {
+      console.log(userName);
+
       // Get the database client
       const client = this._databaseService.Client();
 
       const user = await client.user.findFirst({
         where: {
-          userName,
-          OR: {
-            emailId: userName,
-          },
+          OR: [
+            {
+              userName,
+            },
+            {
+              emailId: userName,
+            },
+          ],
         },
       });
 

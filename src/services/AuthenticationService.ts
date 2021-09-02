@@ -34,6 +34,7 @@ export class AuthenticationService implements IAuthenticationService {
 
   async doLogin(userName: string, password: string): Promise<Login> {
     const user = await this._userRepository.getUserByUserName(userName);
+    console.log(user);
 
     if (user === null) {
       throw new NotFound(`User not found with userName ${userName}`);

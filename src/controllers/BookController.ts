@@ -160,4 +160,50 @@ export default class BookController extends BaseController {
       return this.sendErrorResponse(req, res, error);
     }
   }
+
+  async doBookLikeDislike(req: express.Request, res: express.Response) {
+    try {
+      const { userId, bookId, isLiked } = req.body;
+
+      const doBookLikeDisLike = await this._bookService.doBookLikeDislike(
+        BigInt(userId),
+        BigInt(bookId),
+        isLiked,
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        isLiked ? 'Book liked by' : 'Book disliked',
+        null,
+        null,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async addBookReview(req: express.Request, res: express.Response) {
+    try {
+      const { userId, bookId, review } = req.body;
+
+      const bookReview = await this._bookService.addBookReview(
+        BigInt(userId),
+        BigInt(bookId),
+        review,
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        'Book review added successfully',
+        {
+          length: 1,
+        },
+        bookReview,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }

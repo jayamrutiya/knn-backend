@@ -1,4 +1,9 @@
-import { createBook, editBook, GetBookById } from '../types/Book';
+import {
+  createBook,
+  editBook,
+  GetBookById,
+  GetBookReview,
+} from '../types/Book';
 
 export interface IBookService {
   getBookById(bookId: bigint): Promise<GetBookById>;
@@ -15,4 +20,16 @@ export interface IBookService {
   deleteBook(bookId: bigint): Promise<boolean>;
 
   bookStatus(bookId: bigint, status: boolean): Promise<boolean>;
+
+  doBookLikeDislike(
+    bookId: bigint,
+    userId: bigint,
+    isLiked: boolean,
+  ): Promise<boolean>;
+
+  addBookReview(
+    bookId: bigint,
+    userId: bigint,
+    review: string,
+  ): Promise<GetBookReview>;
 }

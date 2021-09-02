@@ -9,11 +9,14 @@ import { errorHandler } from '../middlewares/errorHandler';
 
 // import routes
 import routers from '../routes/index';
+import cors from './cors';
 
 const app = express();
 
 // Use helmet JS
 app.use(helmet());
+
+app.use(cors);
 
 // Use body parser to read JSON payloads
 app.use(

@@ -3,7 +3,14 @@ import IBookRepository from '../interfaces/IBookRepository';
 import { IDatabaseService } from '../interfaces/IDatabaseService';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { inject, injectable } from 'inversify';
-import { createBook, editBook, GetBookById } from '../types/Book';
+import {
+  createBook,
+  editBook,
+  GetBookById,
+  GetBookLikeDislike,
+  GetBookRating,
+  GetBookReview,
+} from '../types/Book';
 import { NotFound } from '../errors/NotFound';
 import { InternalServerError } from '../errors/InternalServerError';
 import moment from 'moment';
@@ -225,6 +232,190 @@ export class BookRepository implements IBookRepository {
       });
 
       return book !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async doBookLikeDislike(
+    bookId: bigint,
+    userId: bigint,
+    isLiked: boolean,
+  ): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookLikeDislike = await client.bookLikeDislike.create({
+        data: {
+          bookId,
+          userId,
+          isLiked,
+        },
+      });
+
+      return bookLikeDislike !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async getBookLikeDislike(
+    bookId: bigint,
+    userId: bigint,
+  ): Promise<GetBookLikeDislike> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookLikeDislike = await client.bookLikeDislike.findFirst({
+        where: {
+          bookId,
+          userId,
+        },
+      });
+
+      return bookLikeDislike;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async updateBookLikeDislike(id: bigint, isLiked: boolean): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookLikeDislike = await client.bookLikeDislike.update({
+        where: {
+          id,
+        },
+        data: {
+          isLiked,
+          updatedAt: moment().format(),
+        },
+      });
+
+      return bookLikeDislike !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async addBookReview(
+    bookId: bigint,
+    userId: bigint,
+    review: string,
+  ): Promise<GetBookReview> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookReview = await client.bookReview.create({
+        data: {
+          bookId,
+          userId,
+          review,
+        },
+      });
+
+      return bookReview;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async addBookRating(
+    userId: bigint,
+    bookId: bigint,
+    rating: number,
+  ): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookRating = await client.bookRating.create({
+        data: {
+          userId,
+          bookId,
+          rating,
+        },
+      });
+
+      return bookRating !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async updateBookRating(id: bigint, rating: number): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookRating = await client.bookRating.update({
+        where: {
+          id,
+        },
+        data: {
+          rating,
+        },
+      });
+
+      return bookRating !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async getBookRating(userId: bigint, bookId: bigint): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookRating = await client.bookRating.findFirst({
+        where: {
+          userId,
+          bookId,
+        },
+      });
+
+      return bookRating !== null;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       throw new InternalServerError(

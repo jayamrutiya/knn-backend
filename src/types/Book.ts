@@ -40,3 +40,30 @@ export declare type editBook = {
   verifyBy: bigint | null;
   isActivated: boolean;
 };
+
+export declare type GetBookLikeDislike = {
+  id: bigint;
+  bookId: bigint;
+  userId: bigint;
+  isLiked: boolean;
+  createdAt: Date;
+  updatedAt: Date | null;
+} | null;
+
+export declare type GetBookReview = {
+  id: bigint;
+  bookId: bigint;
+  userId: bigint;
+  review: string;
+  createdAt: Date;
+  updatedAt: Date | null;
+};
+
+export declare type GetBookRating = {
+  id: bigint;
+  bookId: bigint;
+  userId: bigint;
+  rating: number;
+  createdAt: Date;
+  updatedAt: Date | null;
+};
