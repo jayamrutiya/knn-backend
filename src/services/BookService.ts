@@ -176,6 +176,7 @@ export class BookService implements IBookService {
     userId: bigint,
     review: string,
   ): Promise<GetBookReview> {
+    // comment
     const user = await this._userRepository.getUserById(userId);
     if (user === null) {
       throw new NotFound(`User not found with id ${userId}`);
