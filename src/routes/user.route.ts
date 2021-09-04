@@ -18,11 +18,8 @@ router.get('/verifyUserName', (req, res) =>
   userController.doesUserNameExist(req, res),
 );
 
-router.post(
-  '/',
-  createUserValidator,
-  (req: express.Request, res: express.Response) =>
-    userController.createUser(req, res),
+router.post('/', (req: express.Request, res: express.Response) =>
+  userController.createUser(req, res),
 );
 
 router.post('/cart/add', (req: express.Request, res: express.Response) =>
