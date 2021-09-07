@@ -51,6 +51,17 @@ CREATE TABLE `RefreshToken` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `ForgotPassword` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `userId` BIGINT NOT NULL,
+    `emailId` VARCHAR(256) NOT NULL,
+    `nonce` TEXT NOT NULL,
+    `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Category` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `categoryName` VARCHAR(256) NOT NULL,
@@ -75,6 +86,7 @@ CREATE TABLE `Book` (
     `price` DECIMAL(10, 2) NOT NULL,
     `titleImage` TEXT NOT NULL,
     `stock` BIGINT NOT NULL DEFAULT 1,
+    `avgRating` FLOAT,
     `createdBy` BIGINT NOT NULL,
     `verifyBy` BIGINT,
     `isActivated` BOOLEAN NOT NULL DEFAULT false,
@@ -100,6 +112,42 @@ CREATE TABLE `BookCategory` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `bookId` BIGINT NOT NULL,
     `categoryId` BIGINT NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `BookLikeDislike` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `bookId` BIGINT NOT NULL,
+    `userId` BIGINT NOT NULL,
+    `isLiked` BOOLEAN NOT NULL,
+    `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updatedAt` DATETIME,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `BookReview` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `bookId` BIGINT NOT NULL,
+    `userId` BIGINT NOT NULL,
+    `review` TEXT NOT NULL,
+    `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updatedAt` DATETIME,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `BookRating` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `bookId` BIGINT NOT NULL,
+    `userId` BIGINT NOT NULL,
+    `rating` FLOAT NOT NULL,
+    `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updatedAt` DATETIME,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -225,6 +273,62 @@ CREATE TABLE `Event` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `Blog` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(256) NOT NULL,
+    `subTitle` VARCHAR(256) NOT NULL,
+    `body` TEXT NOT NULL,
+    `titleImage` TEXT NOT NULL,
+    `blogWriter` BIGINT NOT NULL,
+    `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updatedAt` DATETIME,
+    `userId` BIGINT,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `BlogWriter` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(256) NOT NULL,
+    `profilePicture` VARCHAR(256),
+    `emailId` VARCHAR(95) NOT NULL,
+    `designation` VARCHAR(256) NOT NULL,
+    `about` TEXT NOT NULL,
+    `fbLink` VARCHAR(256) NOT NULL,
+    `instaLink` VARCHAR(256) NOT NULL,
+    `ytLink` VARCHAR(256) NOT NULL,
+    `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updatedAt` DATETIME,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Discussion` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `titleImage` TEXT NOT NULL,
+    `question` TEXT NOT NULL,
+    `createdBy` BIGINT NOT NULL,
+    `categoryId` BIGINT NOT NULL,
+    `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updatedAt` DATETIME,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `DiscussionAnswer` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `discussionId` BIGINT NOT NULL,
+    `answeredBy` BIGINT NOT NULL,
+    `answer` TEXT NOT NULL,
+    `createdAt` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `Role` ADD FOREIGN KEY (`createdBy`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -236,6 +340,9 @@ ALTER TABLE `UserRole` ADD FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DEL
 
 -- AddForeignKey
 ALTER TABLE `RefreshToken` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ForgotPassword` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Category` ADD FOREIGN KEY (`createdBy`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -251,6 +358,24 @@ ALTER TABLE `BookCategory` ADD FOREIGN KEY (`bookId`) REFERENCES `Book`(`id`) ON
 
 -- AddForeignKey
 ALTER TABLE `BookCategory` ADD FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BookLikeDislike` ADD FOREIGN KEY (`bookId`) REFERENCES `Book`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BookLikeDislike` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BookReview` ADD FOREIGN KEY (`bookId`) REFERENCES `Book`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BookReview` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BookRating` ADD FOREIGN KEY (`bookId`) REFERENCES `Book`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BookRating` ADD FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Subscription` ADD FOREIGN KEY (`createdBy`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -296,3 +421,18 @@ ALTER TABLE `UserBookExchangeLogs` ADD FOREIGN KEY (`latestOrderId`) REFERENCES 
 
 -- AddForeignKey
 ALTER TABLE `Event` ADD FOREIGN KEY (`createdBy`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Blog` ADD FOREIGN KEY (`blogWriter`) REFERENCES `BlogWriter`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Discussion` ADD FOREIGN KEY (`createdBy`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Discussion` ADD FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `DiscussionAnswer` ADD FOREIGN KEY (`discussionId`) REFERENCES `Discussion`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `DiscussionAnswer` ADD FOREIGN KEY (`answeredBy`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -2,14 +2,23 @@ import {
   createBook,
   editBook,
   GetBookById,
+  GetBookCategory,
   GetBookLikeDislike,
+  GetBookRating,
   GetBookReview,
 } from '../types/Book';
 
-export default interface IBookRepository {
+export interface IBookRepository {
   getBookById(bookId: bigint): Promise<GetBookById>;
 
   createBook(newBook: createBook): Promise<GetBookById | undefined>;
+
+  createBookCategory(
+    bookId: bigint,
+    categoryId: bigint,
+  ): Promise<GetBookCategory>;
+
+  getBookByCategory(categoryId: bigint): Promise<any>;
 
   getBookByNameAndAuthor(
     bookName: string,
@@ -51,5 +60,12 @@ export default interface IBookRepository {
 
   updateBookRating(id: bigint, rating: number): Promise<boolean>;
 
-  getBookRating(userId: bigint, bookId: bigint): Promise<boolean>;
+  getBookRating(userId: bigint, bookId: bigint): Promise<GetBookRating | null>;
+
+  getAvgBookRating(bookId: bigint): Promise<{ rating: number | null }>;
+
+  updateBookAvgRating(
+    bookId: bigint,
+    avgRating: number | null,
+  ): Promise<boolean>;
 }

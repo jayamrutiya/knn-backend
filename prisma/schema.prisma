@@ -37,12 +37,12 @@ model User {
     UserCurrentBook      UserCurrentBook[]
     UserBookExchangeLogs UserBookExchangeLogs[]
     Event                Event[]
-    Blog                 Blog[]
     Discussion           Discussion[]
     DiscussionAnswer     DiscussionAnswer[]
     BookLikeDislike      BookLikeDislike[]
     BookReview           BookReview[]
     BookRating           BookRating[]
+    ForgotPassword       ForgotPassword[]
 }
 
 model Role {
@@ -69,6 +69,26 @@ model RefreshToken {
     User      User     @relation(references: [id], fields: [userId])
     Token     String   @db.Text
     createdAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model ForgotPassword {
+    id        BigInt   @id @default(autoincrement())
+    userId    BigInt
+    emailId   String   @db.VarChar(256)
+    nonce     String   @db.Text
+    createdAt DateTime @default(now()) @db.Timestamp(6)
+    User      User     @relation(fields: [userId], references: [id])
+}
+
+model Email {
+  id        BigInt    @id @default(autoincrement())
+  address   String    @db.Text
+  subject   String    @db.Text
+  content   String    @db.Text
+  status    String    @db.VarChar(256)
+  error     String?   @db.Text
+  sentAt    DateTime? @db.Timestamp(6)
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
 }
 
 model Category {
@@ -100,6 +120,7 @@ model Book {
     price           Decimal           @db.Decimal(10, 2)
     titleImage      String            @db.Text
     stock           BigInt            @default(1)
+    avgRating       Float?            @db.Float
     createdBy       BigInt
     verifyBy        BigInt?
     User            User              @relation(references: [id], fields: [createdBy])
@@ -160,7 +181,7 @@ model BookRating {
     Book      Book      @relation(references: [id], fields: [bookId])
     userId    BigInt
     User      User      @relation(references: [id], fields: [userId])
-    rating    Int       @db.Int
+    rating    Float     @db.Float
     createdAt DateTime  @default(now()) @db.Timestamp(6)
     updatedAt DateTime? @db.DateTime
 }
@@ -293,15 +314,31 @@ model Event {
 }
 
 model Blog {
-    id         BigInt    @id @default(autoincrement())
-    title      String    @db.VarChar(256)
-    subTitle   String    @db.VarChar(256)
-    body       String    @db.Text
-    titleImage String    @db.Text
-    createdBy  BigInt
-    User       User      @relation(references: [id], fields: [createdBy])
-    createdAt  DateTime  @default(now()) @db.Timestamp(6)
-    updatedAt  DateTime? @db.DateTime
+    id         BigInt     @id @default(autoincrement())
+    title      String     @db.VarChar(256)
+    subTitle   String     @db.VarChar(256)
+    body       String     @db.Text
+    titleImage String     @db.Text
+    blogWriter BigInt
+    BlogWriter BlogWriter @relation(references: [id], fields: [blogWriter])
+    createdAt  DateTime   @default(now()) @db.Timestamp(6)
+    updatedAt  DateTime?  @db.DateTime
+    userId     BigInt?
+}
+
+model BlogWriter {
+    id             BigInt    @id @default(autoincrement())
+    name           String    @db.VarChar(256)
+    profilePicture String?   @db.VarChar(256)
+    emailId        String    @db.VarChar(95)
+    designation    String    @db.VarChar(256)
+    about          String    @db.Text
+    fbLink         String    @db.VarChar(256)
+    instaLink      String    @db.VarChar(256)
+    ytLink         String    @db.VarChar(256)
+    createdAt      DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt      DateTime? @db.DateTime
+    Blog           Blog[]
 }
 
 model Discussion {

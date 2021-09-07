@@ -2,10 +2,16 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../config/types';
 import { InternalServerError } from '../errors/InternalServerError';
 import { NotFound } from '../errors/NotFound';
-import IBlogRepository from '../interfaces/IBlogRepository';
+import { IBlogRepository } from '../interfaces/IBlogRepository';
 import { IDatabaseService } from '../interfaces/IDatabaseService';
 import { ILoggerService } from '../interfaces/ILoggerService';
-import { GetBlog, NewBlog, UpdateBlog } from '../types/Blog';
+import {
+  CreateBlogWriter,
+  GetBlog,
+  GetBlogWriter,
+  NewBlog,
+  UpdateBlog,
+} from '../types/Blog';
 
 @injectable()
 export class BlogRepository implements IBlogRepository {
@@ -33,7 +39,7 @@ export class BlogRepository implements IBlogRepository {
           subTitle: newBlog.subTitle,
           body: newBlog.body,
           titleImage: newBlog.titleImage,
-          createdBy: newBlog.createdBy,
+          blogWriter: newBlog.blogWriter,
         },
       });
 
@@ -65,7 +71,7 @@ export class BlogRepository implements IBlogRepository {
           subTitle: updateBlog.subTitle,
           body: updateBlog.body,
           titleImage: updateBlog.titleImage,
-          createdBy: updateBlog.createdBy,
+          blogWriter: updateBlog.blogWriter,
         },
       });
 
@@ -120,6 +126,40 @@ export class BlogRepository implements IBlogRepository {
       const blog = await client.blog.findMany({});
 
       return blog;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async createBlogWrite(
+    newCreateBlogWriter: CreateBlogWriter,
+  ): Promise<GetBlogWriter> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const blogWriter = await client.blogWriter.create({
+        data: {
+          name: newCreateBlogWriter.name,
+          profilePicture: newCreateBlogWriter.profilePicture,
+          emailId: newCreateBlogWriter.emailId,
+          designation: newCreateBlogWriter.designation,
+          about: newCreateBlogWriter.about,
+          fbLink: newCreateBlogWriter.fbLink,
+          instaLink: newCreateBlogWriter.instaLink,
+          ytLink: newCreateBlogWriter.ytLink,
+        },
+      });
+
+      return blogWriter;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       if (error instanceof NotFound) {

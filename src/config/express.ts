@@ -40,6 +40,8 @@ app.use(`${ENV.API_ROOT}/books`, routers.bookRouter);
 app.use(`${ENV.API_ROOT}/events`, routers.eventRouter);
 app.use(`${ENV.API_ROOT}/blogs`, routers.blogRouter);
 app.use(`${ENV.API_ROOT}/discussions`, routers.discussionRouter);
+app.use(`${ENV.API_ROOT}/categories`, routers.categoryRouter);
+
 // Use error handling middleware
 app.use(errorHandler);
 

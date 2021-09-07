@@ -17,6 +17,14 @@ router.post('/', uploadBookTitleImage.single('titleImage'), (req, res) =>
   bookController.createBook(req, res),
 );
 
+router.post('/:bookId/category/:categoryId', (req, res) =>
+  bookController.createBookCategory(req, res),
+);
+
+router.get('/category/:categoryId', (req, res) =>
+  bookController.getBookByCategory(req, res),
+);
+
 router.put('/:id', uploadBookTitleImage.single('titleImage'), (req, res) =>
   bookController.editBook(req, res),
 );
@@ -30,5 +38,7 @@ router.post('/like/dislike', (req, res) =>
 );
 
 router.post('/review', (req, res) => bookController.addBookReview(req, res));
+
+router.post('/rating', (req, res) => bookController.createBookRating(req, res));
 
 export default router;

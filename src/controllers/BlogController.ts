@@ -1,9 +1,9 @@
 import { injectable } from 'inversify';
-import IBlogService from '../interfaces/IBlogService';
+import { IBlogService } from '../interfaces/IBlogService';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import BaseController from './BaseController';
 import * as express from 'express';
-import { NewBlog, UpdateBlog } from '../types/Blog';
+import { CreateBlogWriter, NewBlog, UpdateBlog } from '../types/Blog';
 
 @injectable()
 export default class BlogController extends BaseController {
@@ -20,7 +20,7 @@ export default class BlogController extends BaseController {
 
   async createBlog(req: express.Request, res: express.Response) {
     try {
-      const { title, subTitle, body, createdBy } = req.body;
+      const { title, subTitle, body, blogWriter } = req.body;
 
       const newBlog: NewBlog = {
         title,
@@ -29,7 +29,7 @@ export default class BlogController extends BaseController {
         titleImage: req.file
           ? 'http://127.0.0.1:3000/images/' + req.file.filename
           : 'no image',
-        createdBy: BigInt(createdBy),
+        blogWriter: BigInt(blogWriter),
       };
 
       const blog = await this._blogService.createBlog(newBlog);
@@ -88,7 +88,7 @@ export default class BlogController extends BaseController {
 
   async updateBlog(req: express.Request, res: express.Response) {
     try {
-      const { title, subTitle, body, createdBy } = req.body;
+      const { title, subTitle, body, blogWriter } = req.body;
 
       const updateBlog: UpdateBlog = {
         id: BigInt(req.params.id),
@@ -98,7 +98,7 @@ export default class BlogController extends BaseController {
         titleImage: req.file
           ? 'http://127.0.0.1:3000/images/' + req.file.filename
           : 'no image',
-        createdBy: BigInt(createdBy),
+        blogWriter: BigInt(blogWriter),
       };
 
       const blog = await this._blogService.updateBlog(updateBlog);
@@ -109,6 +109,47 @@ export default class BlogController extends BaseController {
         blog ? 'Blog updated successfully' : 'Something went wrong',
         null,
         null,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async createBlogWriter(req: express.Request, res: express.Response) {
+    try {
+      const {
+        name,
+        emailId,
+        designation,
+        about,
+        fbLink,
+        instaLink,
+        ytLink,
+      } = req.body;
+
+      const newBlogWriter: CreateBlogWriter = {
+        name,
+        profilePicture: req.file
+          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          : null,
+        emailId,
+        designation,
+        about,
+        fbLink,
+        instaLink,
+        ytLink,
+      };
+
+      const blogWriter = await this._blogService.createBlogWrite(newBlogWriter);
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        'Blog writer created successfully',
+        {
+          length: 1,
+        },
+        blogWriter,
       );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);

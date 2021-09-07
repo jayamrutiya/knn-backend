@@ -22,6 +22,12 @@ export interface IUserRepository {
 
   storeRefreshToken(userId: bigint, token: string): Promise<boolean>;
 
+  saveForgotPassword(
+    userId: bigint,
+    emailId: string,
+    nonce: string,
+  ): Promise<void>;
+
   getRereshToken(userId: bigint, refreshToken: string): Promise<RefreshToken>;
 
   getUserById(userId: bigint): Promise<User | null>;

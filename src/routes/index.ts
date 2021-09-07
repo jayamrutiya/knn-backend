@@ -8,6 +8,7 @@ import bookRouter from './book.route';
 import eventRouter from './event.route';
 import blogRouter from './blog.route';
 import discussionRouter from './discussion.route';
+import categoryRouter from './category.route';
 
 export default {
   testRouter,
@@ -20,4 +21,5 @@ export default {
   eventRouter,
   blogRouter,
   discussionRouter,
+  categoryRouter,
 };

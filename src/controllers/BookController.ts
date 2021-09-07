@@ -62,6 +62,50 @@ export default class BookController extends BaseController {
     }
   }
 
+  async createBookCategory(req: express.Request, res: express.Response) {
+    try {
+      const bookId = BigInt(req.params.bookId);
+      const categoryId = BigInt(req.params.categoryId);
+
+      const bookCategoy = await this._bookService.createBookCategory(
+        bookId,
+        categoryId,
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        'Book Category created successfully',
+        {
+          length: 1,
+        },
+        bookCategoy,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async getBookByCategory(req: express.Request, res: express.Response) {
+    try {
+      const categoryId = BigInt(req.params.categoryId);
+
+      const book = await this._bookService.getBookByCategory(categoryId);
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        {
+          length: book.length,
+        },
+        book,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
   async getBookByNameAndAuthor(req: express.Request, res: express.Response) {
     try {
       // get parameters
@@ -201,6 +245,28 @@ export default class BookController extends BaseController {
           length: 1,
         },
         bookReview,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async createBookRating(req: express.Request, res: express.Response) {
+    try {
+      const { userId, bookId, rating } = req.body;
+
+      const bookRating = await this._bookService.createBookRating(
+        BigInt(userId),
+        BigInt(bookId),
+        parseFloat(rating),
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        'Book rating created successfully',
+        null,
+        null,
       );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);

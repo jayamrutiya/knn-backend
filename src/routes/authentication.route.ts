@@ -4,6 +4,7 @@ import { iocContainer as Container } from '../config/container';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { IAuthenticationService } from '../interfaces/IAuthenticationService';
 import AuthenticationController from '../controllers/AuthenticationController';
+import path from 'path';
 
 const router = express.Router();
 

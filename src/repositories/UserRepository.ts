@@ -207,6 +207,33 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  async saveForgotPassword(
+    userId: bigint,
+    emailId: string,
+    nonce: string,
+  ): Promise<void> {
+    try {
+      // get the database client
+      const client = this._databaseService.Client();
+
+      // Store forgot password request
+      await client.forgotPassword.create({
+        data: {
+          userId,
+          emailId,
+          nonce,
+        },
+      });
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
   async getRereshToken(
     userId: bigint,
     refreshToken: string,

@@ -1,5 +1,5 @@
 import { TYPES } from '../config/types';
-import IBookRepository from '../interfaces/IBookRepository';
+import { IBookRepository } from '../interfaces/IBookRepository';
 import { IBookService } from '../interfaces/IBookService';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { inject, injectable } from 'inversify';
@@ -7,6 +7,7 @@ import {
   createBook,
   editBook,
   GetBookById,
+  GetBookCategory,
   GetBookReview,
 } from '../types/Book';
 import { BadRequest } from '../errors/BadRequest';
@@ -129,6 +130,17 @@ export class BookService implements IBookService {
     return book;
   }
 
+  async createBookCategory(
+    bookId: bigint,
+    categoryId: bigint,
+  ): Promise<GetBookCategory> {
+    return this._bookRepository.createBookCategory(bookId, categoryId);
+  }
+
+  async getBookByCategory(categoryId: bigint): Promise<any> {
+    return this._bookRepository.getBookByCategory(categoryId);
+  }
+
   async getBookByNameAndAuthor(
     bookName: string,
     authorName: string,
@@ -184,5 +196,47 @@ export class BookService implements IBookService {
     await this._bookRepository.getBookById(bookId);
 
     return this._bookRepository.addBookReview(bookId, userId, review);
+  }
+
+  async createBookRating(
+    userId: bigint,
+    bookId: bigint,
+    rating: number,
+  ): Promise<boolean> {
+    const user = await this._userRepository.getUserById(userId);
+
+    if (user === null) {
+      throw new NotFound(`User not found with id ${userId}`);
+    }
+
+    await this._bookRepository.getBookById(bookId);
+
+    const bookRating = await this._bookRepository.getBookRating(userId, bookId);
+
+    let bookrating;
+
+    if (bookRating !== null) {
+      bookrating = await this._bookRepository.updateBookRating(
+        bookRating.id,
+        rating,
+      );
+    }
+
+    bookrating = await this._bookRepository.addBookRating(
+      userId,
+      bookId,
+      rating,
+    );
+
+    const getAvgBookRating = await this._bookRepository.getAvgBookRating(
+      bookId,
+    );
+
+    const updateAvgBookRating = await this._bookRepository.updateBookAvgRating(
+      bookId,
+      getAvgBookRating.rating,
+    );
+
+    return bookrating;
   }
 }

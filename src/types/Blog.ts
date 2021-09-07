@@ -4,7 +4,7 @@ export declare type GetBlog = {
   subTitle: string;
   body: string;
   titleImage: string;
-  createdBy: bigint;
+  blogWriter: bigint;
   createdAt: Date;
   updatedAt: Date | null;
 };
@@ -15,7 +15,7 @@ export declare type NewBlog = {
   subTitle: string;
   body: string;
   titleImage: string;
-  createdBy: bigint;
+  blogWriter: bigint;
   // createdAt: Date;
   // updatedAt: Date | null;
 };
@@ -26,7 +26,35 @@ export declare type UpdateBlog = {
   subTitle: string;
   body: string;
   titleImage: string;
-  createdBy: bigint;
+  blogWriter: bigint;
   // createdAt: Date;
   // updatedAt: Date | null;
+};
+
+export declare type CreateBlogWriter = {
+  // id: bigint;
+  name: string;
+  profilePicture: string | null;
+  emailId: string;
+  designation: string;
+  about: string;
+  fbLink: string;
+  instaLink: string;
+  ytLink: string;
+  // createdAt: Date;
+  // updatedAt: Date | null;
+};
+
+export declare type GetBlogWriter = {
+  id: bigint;
+  name: string;
+  profilePicture: string | null;
+  emailId: string;
+  designation: string;
+  about: string;
+  fbLink: string;
+  instaLink: string;
+  ytLink: string;
+  createdAt: Date;
+  updatedAt: Date | null;
 };

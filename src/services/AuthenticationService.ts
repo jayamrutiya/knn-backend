@@ -11,6 +11,8 @@ import crypto from 'crypto';
 import ENV from '../config/env';
 import { NotFound } from '../errors/NotFound';
 import { GetUser } from '../types/User';
+import app from '../config/express';
+import { EventTypes } from '../config/events';
 
 @injectable()
 export class AuthenticationService implements IAuthenticationService {
@@ -106,5 +108,35 @@ export class AuthenticationService implements IAuthenticationService {
     );
 
     return accessToken;
+  }
+
+  async forgotPassword(emailId: string): Promise<boolean> {
+    // Get user with the given email address
+    const user = await this._userRepository.getUserByEmailId(emailId);
+
+    // If no user is present, throw error
+    if (!user) {
+      throw new NotFound('No user found with given email address.');
+    }
+
+    // Create a new nonce to reset the password
+    const nonce = crypto.randomBytes(64).toString('hex');
+    // console.log(nonce);
+
+    const hashedNonce = crypto
+      .pbkdf2Sync(nonce, user.salt, 1000, 64, 'sha512')
+      .toString('hex');
+    console.log('hasedNonce', hashedNonce);
+    // Emit event to send email
+    app.emit(EventTypes.SEND_RESET_PASSWORD_EMAIL, {
+      userId: user.id,
+      emailId,
+      nonce,
+    });
+
+    // Store the forgot password request
+    this._userRepository.saveForgotPassword(user.id, emailId, hashedNonce);
+
+    return true;
   }
 }

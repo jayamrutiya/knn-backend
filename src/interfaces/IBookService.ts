@@ -2,6 +2,7 @@ import {
   createBook,
   editBook,
   GetBookById,
+  GetBookCategory,
   GetBookReview,
 } from '../types/Book';
 
@@ -9,6 +10,13 @@ export interface IBookService {
   getBookById(bookId: bigint): Promise<GetBookById>;
 
   createBook(newBook: createBook): Promise<GetBookById | undefined>;
+
+  createBookCategory(
+    bookId: bigint,
+    categoryId: bigint,
+  ): Promise<GetBookCategory>;
+
+  getBookByCategory(categoryId: bigint): Promise<any>;
 
   getBookByNameAndAuthor(
     bookName: string,
@@ -32,4 +40,10 @@ export interface IBookService {
     userId: bigint,
     review: string,
   ): Promise<GetBookReview>;
+
+  createBookRating(
+    userId: bigint,
+    bookId: bigint,
+    rating: number,
+  ): Promise<boolean>;
 }

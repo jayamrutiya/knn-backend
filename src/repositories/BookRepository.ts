@@ -1,5 +1,5 @@
 import { TYPES } from '../config/types';
-import IBookRepository from '../interfaces/IBookRepository';
+import { IBookRepository } from '../interfaces/IBookRepository';
 import { IDatabaseService } from '../interfaces/IDatabaseService';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { inject, injectable } from 'inversify';
@@ -7,6 +7,7 @@ import {
   createBook,
   editBook,
   GetBookById,
+  GetBookCategory,
   GetBookLikeDislike,
   GetBookRating,
   GetBookReview,
@@ -14,6 +15,7 @@ import {
 import { NotFound } from '../errors/NotFound';
 import { InternalServerError } from '../errors/InternalServerError';
 import moment from 'moment';
+import { CategoryType } from '@prisma/client';
 
 @injectable()
 export class BookRepository implements IBookRepository {
@@ -46,6 +48,55 @@ export class BookRepository implements IBookRepository {
       }
 
       return book;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async getBookByCategory(categoryId: bigint): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const book = await client.bookCategory.findMany({
+        where: {
+          categoryId,
+        },
+        select: {
+          Category: {
+            select: {
+              categoryName: true,
+            },
+          },
+          Book: {
+            select: {
+              id: true,
+              bookName: true,
+              titleImage: true,
+              avgRating: true,
+            },
+          },
+        },
+      });
+
+      console.log('book', book);
+
+      const bookDetails = await book.map((d) => {
+        return {
+          ...d.Book,
+          categoryName: d.Category.categoryName,
+        };
+      });
+
+      return bookDetails;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       if (error instanceof NotFound) {
@@ -107,6 +158,37 @@ export class BookRepository implements IBookRepository {
       if (error instanceof NotFound) {
         throw error;
       }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async createBookCategory(
+    bookId: bigint,
+    categoryId: bigint,
+  ): Promise<GetBookCategory> {
+    try {
+      const client = this._databaseService.Client();
+
+      const bookCategory = await client.bookCategory.create({
+        data: {
+          bookId,
+          categoryId,
+        },
+      });
+
+      return bookCategory;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
     } finally {
       await this._databaseService.disconnect();
     }
@@ -403,7 +485,10 @@ export class BookRepository implements IBookRepository {
     }
   }
 
-  async getBookRating(userId: bigint, bookId: bigint): Promise<boolean> {
+  async getBookRating(
+    userId: bigint,
+    bookId: bigint,
+  ): Promise<GetBookRating | null> {
     try {
       // Get the database client
       const client = this._databaseService.Client();
@@ -415,7 +500,60 @@ export class BookRepository implements IBookRepository {
         },
       });
 
-      return bookRating !== null;
+      return bookRating;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async getAvgBookRating(bookId: bigint): Promise<{ rating: number | null }> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookAvgRating = await client.bookRating.aggregate({
+        _avg: {
+          rating: true,
+        },
+      });
+
+      console.log(bookAvgRating);
+
+      return bookAvgRating._avg;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async updateBookAvgRating(
+    bookId: bigint,
+    avgRating: number | null,
+  ): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const book = await client.book.update({
+        where: {
+          id: bookId,
+        },
+        data: {
+          avgRating,
+          updatedAt: moment().format(),
+        },
+      });
+
+      return book !== null;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       throw new InternalServerError(

@@ -15,7 +15,7 @@ import crypto from 'crypto';
 import { IRoleRepository } from '../interfaces/IRoleRepository';
 import { User } from '@prisma/client';
 import { NotFound } from '../errors/NotFound';
-import IBookRepository from '../interfaces/IBookRepository';
+import { IBookRepository } from '../interfaces/IBookRepository';
 import { BadRequest } from '../errors/BadRequest';
 import { Decimal } from '@prisma/client/runtime';
 

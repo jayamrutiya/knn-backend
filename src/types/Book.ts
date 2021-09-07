@@ -67,3 +67,9 @@ export declare type GetBookRating = {
   createdAt: Date;
   updatedAt: Date | null;
 };
+
+export declare type GetBookCategory = {
+  id: bigint;
+  bookId: bigint;
+  categoryId: bigint;
+};

@@ -5,6 +5,7 @@ export const errorHandler = (
   err: Error,
   req: express.Request,
   res: express.Response,
+  next: any,
 ): express.Response => {
   // eslint-disable-next-line no-console
   console.warn(`Caught Error for ${req.path}:`, err.message);
@@ -13,9 +14,11 @@ export const errorHandler = (
     return res.status(err.getCode()).json(err.toJSON());
   }
 
-  return res.status(500).json({
-    code: 500,
-    status: 'Internal Server Error',
-    message: err.message,
-  });
+  return next(err);
+
+  // return res.status(500).json({
+  //   code: 500,
+  //   status: 'Internal Server Error',
+  //   message: err.message,
+  // });
 };

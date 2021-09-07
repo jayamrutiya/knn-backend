@@ -1,12 +1,18 @@
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../config/types';
-import IBlogRepository from '../interfaces/IBlogRepository';
-import IBlogService from '../interfaces/IBlogService';
+import { IBlogRepository } from '../interfaces/IBlogRepository';
+import { IBlogService } from '../interfaces/IBlogService';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { IRoleRepository } from '../interfaces/IRoleRepository';
 import { ISubscriptionRepository } from '../interfaces/ISubscriptionRepository';
 import { IUserRepository } from '../interfaces/IUserRepository';
-import { GetBlog, NewBlog, UpdateBlog } from '../types/Blog';
+import {
+  CreateBlogWriter,
+  GetBlog,
+  GetBlogWriter,
+  NewBlog,
+  UpdateBlog,
+} from '../types/Blog';
 
 @injectable()
 export class BlogService implements IBlogService {
@@ -51,5 +57,11 @@ export class BlogService implements IBlogService {
   async updateBlog(updateBlog: UpdateBlog): Promise<boolean> {
     await this._blogRepository.getBlog(updateBlog.id);
     return this._blogRepository.updateBlog(updateBlog);
+  }
+
+  async createBlogWrite(
+    newCreateBlogWriter: CreateBlogWriter,
+  ): Promise<GetBlogWriter> {
+    return this._blogRepository.createBlogWrite(newCreateBlogWriter);
   }
 }

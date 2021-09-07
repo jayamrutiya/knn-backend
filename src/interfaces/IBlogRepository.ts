@@ -1,6 +1,12 @@
-import { GetBlog, NewBlog, UpdateBlog } from '../types/Blog';
+import {
+  CreateBlogWriter,
+  GetBlog,
+  GetBlogWriter,
+  NewBlog,
+  UpdateBlog,
+} from '../types/Blog';
 
-export default interface IBlogRepository {
+export interface IBlogRepository {
   createBlog(newBlog: NewBlog): Promise<GetBlog>;
 
   getBlog(blogId: bigint): Promise<GetBlog>;
@@ -8,4 +14,8 @@ export default interface IBlogRepository {
   getAllBlog(): Promise<GetBlog[]>;
 
   updateBlog(updateBlog: UpdateBlog): Promise<boolean>;
+
+  createBlogWrite(
+    newCreateBlogWriter: CreateBlogWriter,
+  ): Promise<GetBlogWriter>;
 }
