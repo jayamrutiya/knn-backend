@@ -28,4 +28,12 @@ router.post('/refresh', (req: express.Request, res: express.Response) =>
   authenticationController.refreshToken(req, res),
 );
 
+router.post('/password/forgot', (req: express.Request, res: express.Response) =>
+  authenticationController.forgotPassword(req, res),
+);
+
+router.post('/password/reset', (req: express.Request, res: express.Response) =>
+  authenticationController.resetPassword(req, res),
+);
+
 export default router;

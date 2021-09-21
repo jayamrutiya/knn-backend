@@ -1,4 +1,9 @@
-import { GetEvent, NewEvent, UpdateEvent } from '../types/Event';
+import {
+  GetEvent,
+  NewEvent,
+  NewEventRegistration,
+  UpdateEvent,
+} from '../types/Event';
 
 export interface IEventRepository {
   createEvent(newEvent: NewEvent): Promise<GetEvent>;
@@ -8,4 +13,13 @@ export interface IEventRepository {
   getEvent(eventId: bigint): Promise<GetEvent>;
 
   getAllEvent(): Promise<GetEvent[]>;
+
+  eventRegistration(
+    createEventRegistration: NewEventRegistration,
+  ): Promise<boolean>;
+
+  veifyUserEventPayment(
+    eventRegistrationId: bigint,
+    isPaymentDone: boolean,
+  ): Promise<any>;
 }

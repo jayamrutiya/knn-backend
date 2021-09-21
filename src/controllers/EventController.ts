@@ -3,7 +3,7 @@ import { IEventService } from '../interfaces/IEventService';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import BaseController from './BaseController';
 import * as express from 'express';
-import { NewEvent, UpdateEvent } from '../types/Event';
+import { NewEvent, NewEventRegistration, UpdateEvent } from '../types/Event';
 
 @injectable()
 export default class EventController extends BaseController {
@@ -20,7 +20,19 @@ export default class EventController extends BaseController {
 
   async createEvent(req: express.Request, res: express.Response) {
     try {
-      const { title, subTitle, body, startAt, endAt, createdBy } = req.body;
+      const {
+        title,
+        subTitle,
+        body,
+        startAt,
+        endAt,
+        shifts,
+        eligibility,
+        fee,
+        venue,
+        registrationEndAt,
+        createdBy,
+      } = req.body;
 
       const newEvent: NewEvent = {
         title,
@@ -31,6 +43,11 @@ export default class EventController extends BaseController {
           : 'no image',
         startAt: new Date(startAt),
         endAt: new Date(endAt),
+        shifts,
+        eligibility,
+        fee: parseInt(fee),
+        venue,
+        registrationEndAt: new Date(registrationEndAt),
         createdBy: BigInt(createdBy),
       };
 
@@ -52,7 +69,19 @@ export default class EventController extends BaseController {
 
   async updateEvent(req: express.Request, res: express.Response) {
     try {
-      const { title, subTitle, body, startAt, endAt, createdBy } = req.body;
+      const {
+        title,
+        subTitle,
+        body,
+        startAt,
+        endAt,
+        createdBy,
+        shifts,
+        eligibility,
+        fee,
+        venue,
+        registrationEndAt,
+      } = req.body;
 
       const updateEvent: UpdateEvent = {
         id: BigInt(req.params.id),
@@ -64,6 +93,11 @@ export default class EventController extends BaseController {
           : 'no image',
         startAt: new Date(startAt),
         endAt: new Date(endAt),
+        shifts,
+        eligibility,
+        fee,
+        venue,
+        registrationEndAt,
         createdBy: BigInt(createdBy),
       };
 
@@ -115,6 +149,55 @@ export default class EventController extends BaseController {
           length: event.length,
         },
         event,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async eventRegistration(req: express.Request, res: express.Response) {
+    try {
+      const { eventId, userId } = req.body;
+
+      const createEventRegistration: NewEventRegistration = {
+        eventId: BigInt(eventId),
+        userId: BigInt(userId),
+        isPaymentDone: false,
+      };
+
+      const eventRegistration = await this._eventService.eventRegistration(
+        createEventRegistration,
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        eventRegistration
+          ? 'Successfully register in event.'
+          : 'Something went wrong',
+        null,
+        eventRegistration,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async veifyUserEventPayment(req: express.Request, res: express.Response) {
+    try {
+      const { eventRegistrationId, isPaymentDone } = req.body;
+
+      const paymentDone = await this._eventService.veifyUserEventPayment(
+        BigInt(eventRegistrationId),
+        isPaymentDone,
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        isPaymentDone ? 'Event payment verify.' : 'Event payment not verify.',
+        null,
+        isPaymentDone,
       );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);

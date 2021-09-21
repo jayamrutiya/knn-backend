@@ -43,6 +43,7 @@ model User {
     BookReview           BookReview[]
     BookRating           BookRating[]
     ForgotPassword       ForgotPassword[]
+    EventRegistration    EventRegistration[]
 }
 
 model Role {
@@ -81,14 +82,14 @@ model ForgotPassword {
 }
 
 model Email {
-  id        BigInt    @id @default(autoincrement())
-  address   String    @db.Text
-  subject   String    @db.Text
-  content   String    @db.Text
-  status    String    @db.VarChar(256)
-  error     String?   @db.Text
-  sentAt    DateTime? @db.Timestamp(6)
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
+    id        BigInt    @id @default(autoincrement())
+    address   String    @db.Text
+    subject   String    @db.Text
+    content   String    @db.Text
+    status    String    @db.VarChar(256)
+    error     String?   @db.Text
+    sentAt    DateTime? @db.Timestamp(6)
+    createdAt DateTime  @default(now()) @db.Timestamp(6)
 }
 
 model Category {
@@ -300,17 +301,75 @@ model UserBookExchangeLogs {
 }
 
 model Event {
-    id         BigInt    @id @default(autoincrement())
-    title      String    @db.VarChar(256)
-    subTitle   String    @db.VarChar(256)
-    body       String    @db.Text
-    titleImage String    @db.Text
-    startAt    DateTime  @db.Timestamp(6)
-    endAt      DateTime? @db.DateTime
-    createdBy  BigInt
-    User       User      @relation(references: [id], fields: [createdBy])
-    createdAt  DateTime  @default(now()) @db.Timestamp(6)
-    updatedAt  DateTime? @db.DateTime
+    id                BigInt              @id @default(autoincrement())
+    title             String              @db.VarChar(256)
+    subTitle          String              @db.VarChar(256)
+    body              String              @db.Text
+    titleImage        String              @db.Text
+    startAt           DateTime            @db.Timestamp(6)
+    endAt             DateTime?           @db.DateTime
+    shifts            String              @db.VarChar(256)
+    eligibility       String              @db.Text
+    isFree            Boolean
+    fee               Int                 @default(0) @db.Int
+    venue             String              @db.VarChar(256)
+    registrationEndAt DateTime?           @db.Timestamp(6)
+    createdBy         BigInt
+    User              User                @relation(references: [id], fields: [createdBy])
+    isActive          Boolean             @default(false)
+    createdAt         DateTime            @default(now()) @db.Timestamp(6)
+    updatedAt         DateTime?           @db.DateTime
+    EventBenefits     EventBenefits[]
+    EventSpeakers     EventSpeakers[]
+    EventRequirements EventRequirements[]
+    EventLearning     EventLearning[]
+    EventRegistration EventRegistration[]
+}
+
+model EventBenefits {
+    id        BigInt   @id @default(autoincrement())
+    eventId   BigInt
+    Event     Event    @relation(references: [id], fields: [eventId])
+    benefits  String   @db.Text
+    createdAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model EventSpeakers {
+    id             BigInt   @id @default(autoincrement())
+    eventId        BigInt
+    Event          Event    @relation(references: [id], fields: [eventId])
+    profilePicture String   @db.Text
+    name           String   @db.VarChar(255)
+    designation    String   @db.VarChar(255)
+    company        String   @db.VarChar(255)
+    createdAt      DateTime @default(now()) @db.Timestamp(6)
+}
+
+model EventRequirements {
+    id           BigInt   @id @default(autoincrement())
+    eventId      BigInt
+    Event        Event    @relation(references: [id], fields: [eventId])
+    requirements String   @db.Text
+    createdAt    DateTime @default(now()) @db.Timestamp(6)
+}
+
+model EventLearning {
+    id        BigInt   @id @default(autoincrement())
+    eventId   BigInt
+    Event     Event    @relation(references: [id], fields: [eventId])
+    learning  String   @db.Text
+    createdAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model EventRegistration {
+    id            BigInt    @id @default(autoincrement())
+    eventId       BigInt
+    Event         Event     @relation(references: [id], fields: [eventId])
+    userId        BigInt
+    User          User      @relation(references: [id], fields: [userId])
+    isPaymentDone Boolean   @default(false)
+    createdAt     DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt     DateTime? @db.Timestamp(6)
 }
 
 model Blog {

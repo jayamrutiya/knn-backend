@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { ForgotPassword, User } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime';
 import { RefreshToken } from '../types/Authentication';
 import {
@@ -27,6 +27,10 @@ export interface IUserRepository {
     emailId: string,
     nonce: string,
   ): Promise<void>;
+
+  getForgotPassword(userId: bigint): Promise<ForgotPassword | null>;
+
+  updatePassword(userId: bigint, password: string): Promise<void>;
 
   getRereshToken(userId: bigint, refreshToken: string): Promise<RefreshToken>;
 

@@ -10,6 +10,8 @@ import { errorHandler } from '../middlewares/errorHandler';
 // import routes
 import routers from '../routes/index';
 import cors from './cors';
+import { EventTypes } from './events';
+import subscribers from '../subscribers';
 
 const app = express();
 
@@ -44,6 +46,15 @@ app.use(`${ENV.API_ROOT}/categories`, routers.categoryRouter);
 
 // Use error handling middleware
 app.use(errorHandler);
+
+app.on(
+  EventTypes.SEND_RESET_PASSWORD_EMAIL,
+  subscribers.sendResetPasswordEmail,
+);
+app.on(
+  EventTypes.SEND_EVENT_REGISTRATION,
+  subscribers.sendEventRegistrationEmail,
+);
 
 // Export the configured app
 export default app;

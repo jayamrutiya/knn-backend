@@ -25,4 +25,12 @@ router.get('/:id', (req, res) => eventController.getEvent(req, res));
 
 router.get('/', (req, res) => eventController.getAllEvent(req, res));
 
+router.post('/registration', (req, res) =>
+  eventController.eventRegistration(req, res),
+);
+
+router.post('/verify/payment', (req, res) =>
+  eventController.veifyUserEventPayment(req, res),
+);
+
 export default router;

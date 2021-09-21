@@ -121,12 +121,11 @@ export class AuthenticationService implements IAuthenticationService {
 
     // Create a new nonce to reset the password
     const nonce = crypto.randomBytes(64).toString('hex');
-    // console.log(nonce);
+    console.log('nonce', nonce);
 
     const hashedNonce = crypto
       .pbkdf2Sync(nonce, user.salt, 1000, 64, 'sha512')
       .toString('hex');
-    console.log('hasedNonce', hashedNonce);
     // Emit event to send email
     app.emit(EventTypes.SEND_RESET_PASSWORD_EMAIL, {
       userId: user.id,
@@ -135,7 +134,54 @@ export class AuthenticationService implements IAuthenticationService {
     });
 
     // Store the forgot password request
-    this._userRepository.saveForgotPassword(user.id, emailId, hashedNonce);
+    await this._userRepository.saveForgotPassword(
+      user.id,
+      emailId,
+      hashedNonce,
+    );
+
+    return true;
+  }
+
+  async resetPassword(
+    userId: bigint,
+    password: string,
+    nonce: string,
+  ): Promise<boolean> {
+    console.log(userId, password, nonce);
+
+    // Get user with the given email address
+    const user = await this._userRepository.getUserById(userId);
+
+    // If no user is present, throw error
+    if (!user) {
+      throw new NotFound('No user found with given email address.');
+    }
+
+    // Get forgot password request
+    const forgotPassword = await this._userRepository.getForgotPassword(userId);
+
+    if (!forgotPassword) {
+      throw new BadRequest(
+        'Cannot find request to reset password for the given user.',
+      );
+    }
+
+    // Check if the nonce is valid
+    const hashedNonce = crypto
+      .pbkdf2Sync(nonce, user.salt, 1000, 64, 'sha512')
+      .toString('hex');
+
+    console.log('kjljjk', hashedNonce, '&', forgotPassword.nonce);
+    if (hashedNonce !== forgotPassword.nonce) {
+      throw new BadRequest('Invalid request to reset password');
+    }
+
+    // Save the new password
+    const hashedPassword = crypto
+      .pbkdf2Sync(password, user.salt, 1000, 64, 'sha512')
+      .toString('hex');
+    this._userRepository.updatePassword(userId, hashedPassword);
 
     return true;
   }

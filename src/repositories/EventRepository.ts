@@ -6,7 +6,12 @@ import { NotFound } from '../errors/NotFound';
 import { IDatabaseService } from '../interfaces/IDatabaseService';
 import { IEventRepository } from '../interfaces/IEventRepository';
 import { ILoggerService } from '../interfaces/ILoggerService';
-import { GetEvent, NewEvent, UpdateEvent } from '../types/Event';
+import {
+  GetEvent,
+  NewEvent,
+  NewEventRegistration,
+  UpdateEvent,
+} from '../types/Event';
 
 @injectable()
 export class EventRepository implements IEventRepository {
@@ -36,6 +41,12 @@ export class EventRepository implements IEventRepository {
           titleImage: newEvent.titleImage,
           startAt: newEvent.startAt,
           endAt: newEvent.endAt,
+          shifts: newEvent.shifts,
+          eligibility: newEvent.eligibility,
+          fee: newEvent.fee,
+          isFree: newEvent.fee == 0,
+          venue: newEvent.venue,
+          registrationEndAt: newEvent.registrationEndAt,
           createdBy: newEvent.createdBy,
         },
       });
@@ -70,6 +81,12 @@ export class EventRepository implements IEventRepository {
           titleImage: updateEvent.titleImage,
           startAt: updateEvent.startAt,
           endAt: updateEvent.endAt,
+          shifts: updateEvent.shifts,
+          eligibility: updateEvent.eligibility,
+          fee: updateEvent.fee,
+          isFree: updateEvent.fee == 0,
+          venue: updateEvent.venue,
+          registrationEndAt: updateEvent.registrationEndAt,
           updatedAt: moment().format(),
         },
       });
@@ -125,6 +142,71 @@ export class EventRepository implements IEventRepository {
       const event = await client.event.findMany({});
 
       return event;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async eventRegistration(
+    createEventRegistration: NewEventRegistration,
+  ): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const eventRegistration = await client.eventRegistration.create({
+        data: {
+          eventId: createEventRegistration.eventId,
+          userId: createEventRegistration.userId,
+          isPaymentDone: createEventRegistration.isPaymentDone,
+        },
+      });
+
+      return eventRegistration != null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async veifyUserEventPayment(
+    eventRegistrationId: bigint,
+    isPaymentDone: boolean,
+  ): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const paymentDone = await client.eventRegistration.update({
+        where: {
+          id: eventRegistrationId,
+        },
+        data: {
+          isPaymentDone,
+          updatedAt: moment().format(),
+        },
+        select: {
+          eventId: true,
+          userId: true,
+        },
+      });
+
+      return paymentDone;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       if (error instanceof NotFound) {

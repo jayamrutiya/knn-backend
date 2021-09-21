@@ -1,13 +1,21 @@
 import { inject, injectable } from 'inversify';
+import { EventTypes } from '../config/events';
+import app from '../config/express';
 import { TYPES } from '../config/types';
 import { BadRequest } from '../errors/BadRequest';
+import { NotFound } from '../errors/NotFound';
 import { IEventRepository } from '../interfaces/IEventRepository';
 import { IEventService } from '../interfaces/IEventService';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { IRoleRepository } from '../interfaces/IRoleRepository';
 import { ISubscriptionRepository } from '../interfaces/ISubscriptionRepository';
 import { IUserRepository } from '../interfaces/IUserRepository';
-import { GetEvent, NewEvent, UpdateEvent } from '../types/Event';
+import {
+  GetEvent,
+  NewEvent,
+  NewEventRegistration,
+  UpdateEvent,
+} from '../types/Event';
 
 @injectable()
 export class EventService implements IEventService {
@@ -57,5 +65,80 @@ export class EventService implements IEventService {
 
   async getAllEvent(): Promise<GetEvent[]> {
     return this._eventRepository.getAllEvent();
+  }
+
+  async eventRegistration(
+    createEventRegistration: NewEventRegistration,
+  ): Promise<boolean> {
+    const getUser = await this._userRepository.getUserById(
+      createEventRegistration.userId,
+    );
+
+    if (getUser === null) {
+      throw new NotFound('User not found');
+    }
+
+    const getEvent = await this._eventRepository.getEvent(
+      createEventRegistration.eventId,
+    );
+
+    if (getEvent.isActive === false) {
+      throw new BadRequest('Event not activeted.');
+    }
+
+    if (
+      getEvent.registrationEndAt &&
+      getEvent.registrationEndAt?.getTime() > new Date().getTime()
+    ) {
+      throw new BadRequest('Event registration is closed.');
+    }
+
+    createEventRegistration.isPaymentDone = getEvent.isFree;
+
+    const eventRegistration = await this._eventRepository.eventRegistration(
+      createEventRegistration,
+    );
+
+    if (getEvent.isFree) {
+      app.emit(EventTypes.SEND_EVENT_REGISTRATION, {
+        eventName: getEvent.title,
+        eventStartAt: getEvent.startAt,
+        eventEndAt: getEvent.endAt,
+        eventVenue: getEvent.venue,
+        emailId: getUser.emailId,
+      });
+    }
+
+    return eventRegistration;
+  }
+
+  async veifyUserEventPayment(
+    eventRegistrationId: bigint,
+    isPaymentDone: boolean,
+  ): Promise<any> {
+    const paymentDone = await this._eventRepository.veifyUserEventPayment(
+      eventRegistrationId,
+      isPaymentDone,
+    );
+
+    const getEvent = await this._eventRepository.getEvent(paymentDone.eventId);
+
+    const getUser = await this._userRepository.getUserById(paymentDone.userId);
+
+    if (getUser === null) {
+      throw new NotFound('User Not Found');
+    }
+
+    if (isPaymentDone) {
+      app.emit(EventTypes.SEND_EVENT_REGISTRATION, {
+        eventName: getEvent.title,
+        eventStartAt: getEvent.startAt,
+        eventEndAt: getEvent.endAt,
+        eventVenue: getEvent.venue,
+        emailId: getUser.emailId,
+      });
+    }
+
+    return paymentDone;
   }
 }

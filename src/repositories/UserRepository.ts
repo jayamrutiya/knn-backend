@@ -15,7 +15,7 @@ import {
 } from '../types/User';
 import { InternalServerError } from '../errors/InternalServerError';
 import moment from 'moment';
-import { User } from '@prisma/client';
+import { ForgotPassword, User } from '@prisma/client';
 import { NotFound } from '../errors/NotFound';
 import { RefreshToken } from '../types/Authentication';
 import { Decimal } from '@prisma/client/runtime';
@@ -228,6 +228,54 @@ export class UserRepository implements IUserRepository {
       this._loggerService.getLogger().error(`Error ${error}`);
       throw new InternalServerError(
         'An error occurred while interacting with the database',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async getForgotPassword(userId: bigint): Promise<ForgotPassword | null> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      // Return the forgot password request
+      return await client.forgotPassword.findFirst({
+        where: {
+          userId,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async updatePassword(userId: bigint, password: string): Promise<void> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      // Update the password
+      await client.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          password,
+        },
+      });
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
       );
     } finally {
       await this._databaseService.disconnect();
