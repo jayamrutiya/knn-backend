@@ -7,6 +7,7 @@ export declare type GetBlog = {
   blogWriter: bigint;
   createdAt: Date;
   updatedAt: Date | null;
+  BlogWriter?: GetBlogWriter;
 };
 
 export declare type NewBlog = {

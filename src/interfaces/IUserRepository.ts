@@ -59,4 +59,10 @@ export interface IUserRepository {
     noOfBookUploaded: number,
     priceDeposited: Decimal,
   ): Promise<boolean>;
+
+  verifyUser(userId: bigint, isVerify: boolean): Promise<boolean>;
+
+  getUser(userId: bigint): Promise<any>;
+  
+  createUserBook(userId: bigint, bookId: bigint): Promise<any>
 }

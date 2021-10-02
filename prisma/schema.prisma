@@ -23,6 +23,7 @@ model User {
     city                 String?                @db.VarChar(256)
     street               String?                @db.VarChar(256)
     isSuspended          Boolean                @default(false)
+    isVerify             Boolean                @default(false)
     createdAt            DateTime               @default(now()) @db.Timestamp(6)
     updatedAt            DateTime?              @db.DateTime
     Role                 Role[]
@@ -30,6 +31,7 @@ model User {
     RefreshToken         RefreshToken[]
     Category             Category[]
     Book                 Book[]
+    usera                Book[]                 @relation("usera")
     Subscription         Subscription[]
     UserSubscription     UserSubscription[]
     Cart                 Cart[]
@@ -44,6 +46,7 @@ model User {
     BookRating           BookRating[]
     ForgotPassword       ForgotPassword[]
     EventRegistration    EventRegistration[]
+    UserBook             UserBook[]
 }
 
 model Role {
@@ -114,7 +117,8 @@ enum CategoryType {
 model Book {
     id              BigInt            @id @default(autoincrement())
     bookName        String            @db.VarChar(256)
-    authorName      String            @db.VarChar(256)
+    authorId        BigInt?
+    BookAuthor      BookAuthor?       @relation(fields: [authorId], references: [id])
     isbn            String?           @db.VarChar(256)
     pages           Int?              @db.Int
     description     String?           @db.Text
@@ -125,6 +129,7 @@ model Book {
     createdBy       BigInt
     verifyBy        BigInt?
     User            User              @relation(references: [id], fields: [createdBy])
+    UserA           User?             @relation("usera", references: [id], fields: [verifyBy])
     isActivated     Boolean           @default(false)
     createdAt       DateTime          @default(now()) @db.Timestamp(6)
     updatedAt       DateTime?         @db.DateTime
@@ -135,6 +140,25 @@ model Book {
     BookLikeDislike BookLikeDislike[]
     BookReview      BookReview[]
     BookRating      BookRating[]
+    UserBook        UserBook[]
+}
+
+model UserBook {
+    id        BigInt   @id @default(autoincrement())
+    userId    BigInt
+    User      User     @relation(fields: [userId], references: [id])
+    bookId    BigInt
+    Book      Book     @relation(fields: [bookId], references: [id])
+    createdAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model BookAuthor {
+    id             BigInt    @id @default(autoincrement())
+    name           String    @db.VarChar(255)
+    profilePicture String    @db.Text
+    createdAt      DateTime  @default(now()) @db.Timestamp(6)
+    updatedAt      DateTime? @db.Timestamp(6)
+    Book           Book[]
 }
 
 model BookImage {

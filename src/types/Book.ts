@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 export declare type GetBookById = {
   id: bigint;
   bookName: string;
-  authorName: string;
+  authorId: bigint | null;
   isbn: string | null;
   pages: number | null;
   description: string | null;
@@ -16,21 +16,30 @@ export declare type GetBookById = {
   updatedAt: Date | null;
 };
 
+export declare type GetBookAuthor = {
+  id: bigint;
+  name: string;
+  profilePicture: string;
+  createdAt: Date;
+  updatedAt: Date | null;
+};
+
 export declare type createBook = {
   bookName: string;
-  authorName: string;
+  authorId: bigint | null;
   isbn: string | null;
   pages: number | null;
   description: string | null;
   price: Prisma.Decimal;
   titleImage: string;
   createdBy: bigint;
+  verifyBy: bigint | null;
 };
 
 export declare type editBook = {
   id: bigint;
   bookName: string;
-  authorName: string;
+  authorId: bigint;
   isbn: string | null;
   pages: number | null;
   description: string | null;

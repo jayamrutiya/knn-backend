@@ -4,6 +4,8 @@ import BaseController from './BaseController';
 import { inject, injectable } from 'inversify';
 import * as express from 'express';
 import { createBook, editBook } from '../types/Book';
+import ENV from '../config/env';
+import { Decimal } from '@prisma/client/runtime';
 
 @injectable()
 export default class BookController extends BaseController {
@@ -18,35 +20,61 @@ export default class BookController extends BaseController {
     this._loggerService.getLogger().info(`Creating : ${this.constructor.name}`);
   }
 
+  async getBookById(req: express.Request, res: express.Response) {
+    try {
+      const bookId = BigInt(req.params.id);
+
+      const book = await this._bookService.getBookById(bookId);
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        'Book fetched successfully',
+        {
+          length: 1,
+        },
+        book,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
   async createBook(req: express.Request, res: express.Response) {
     try {
       // get parameters
       const {
         bookName,
+        authorId,
         authorName,
         isbn,
         pages,
         description,
         price,
         createdBy,
+        verifyBy,
       } = req.body;
 
       const newBook: createBook = {
         bookName,
-        authorName,
+        authorId: authorId === '' ? null : BigInt(authorId),
         isbn,
-        pages: parseInt(pages),
+        pages: pages === '' ? null : parseInt(pages),
         description,
-        price,
+        price: new Decimal(price),
         titleImage: req.file
-          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         createdBy: BigInt(createdBy),
+        verifyBy:
+          verifyBy != null || verifyBy != 'null' || verifyBy != undefined
+            ? BigInt(verifyBy)
+            : verifyBy,
       };
 
       console.log(newBook, 'newBook');
 
-      const book = await this._bookService.createBook(newBook);
+      const book = await this._bookService.createBook(newBook, authorName);
 
       // Return response
       return this.sendJSONResponse(
@@ -133,10 +161,12 @@ export default class BookController extends BaseController {
 
   async editBook(req: express.Request, res: express.Response) {
     try {
+      console.log('ENV ', ENV.API_ROOT);
+
       // get parameters
       const {
         bookName,
-        authorName,
+        authorId,
         isbn,
         pages,
         description,
@@ -149,13 +179,13 @@ export default class BookController extends BaseController {
       const updateBook: editBook = {
         id: BigInt(req.params.id),
         bookName,
-        authorName,
+        authorId: BigInt(authorId),
         isbn,
         pages: parseInt(pages),
         description,
         price,
         titleImage: req.file
-          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         stock: BigInt(stock),
         verifyBy: BigInt(verifyBy),

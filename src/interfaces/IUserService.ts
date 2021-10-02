@@ -18,4 +18,8 @@ export interface IUserService {
     deliveryAddress: string,
     totalAmount: Decimal,
   ): Promise<GetOrder>;
+
+  verifyUser(userId: bigint, isVerify: boolean): Promise<boolean>;
+
+  getUser(userId: bigint): Promise<any>;
 }

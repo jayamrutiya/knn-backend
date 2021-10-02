@@ -30,4 +30,12 @@ router.post('/order', (req: express.Request, res: express.Response) =>
   userController.generateOrder(req, res),
 );
 
+router.post('/verify', (req: express.Request, res: express.Response) =>
+  userController.verifyUser(req, res),
+);
+
+router.post('/info/:userId', (req: express.Request, res: express.Response) =>
+  userController.getUser(req, res),
+);
+
 export default router;

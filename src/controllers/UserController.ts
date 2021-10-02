@@ -154,4 +154,42 @@ export default class UserController extends BaseController {
       return this.sendErrorResponse(req, res, error);
     }
   }
+
+  async verifyUser(req: express.Request, res: express.Response) {
+    try {
+      const { userId, isVerify } = req.body;
+
+      const userVerify = await this._userService.verifyUser(
+        BigInt(userId),
+        isVerify,
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        isVerify ? 'User verifed successfully' : 'User not verifed',
+        null,
+        null,
+      );
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async getUser(req: express.Request, res: express.Response) {
+    try {
+      const userId = req.params.userId;
+
+      const user = await this._userService.getUser(BigInt(userId));
+
+      // Return response
+      return this.sendJSONResponse(res, null, null, user);
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }

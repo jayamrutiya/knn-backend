@@ -48,7 +48,10 @@ export class BookService implements IBookService {
     return this._bookRepository.getBookById(bookId);
   }
 
-  async createBook(newBook: createBook): Promise<GetBookById | undefined> {
+  async createBook(
+    newBook: createBook,
+    authorName: string,
+  ): Promise<GetBookById | undefined> {
     // get user role
     const userRole = await this._roleRepository.getUserRole(newBook.createdBy);
     let book;
@@ -82,7 +85,7 @@ export class BookService implements IBookService {
 
       const findBookByName = await this._bookRepository.getBookByNameAndAuthor(
         newBook.bookName,
-        newBook.authorName,
+        authorName,
       );
 
       if (findBookByName === undefined || findBookByName === null) {
@@ -92,6 +95,8 @@ export class BookService implements IBookService {
         await this._bookRepository.updateBookStock(findBookByName.id, true);
         book = findBookByName;
       }
+
+      await this._userRepository.createUserBook(newBook.createdBy, book!.id);
 
       const totalBook = parseInt(userSubscriptionUsage.noOfBookUploaded) + 1;
 
@@ -101,21 +106,31 @@ export class BookService implements IBookService {
         userSubscriptionUsage.priceDeposited,
       );
 
-      if (userSubscription.noOfBook === totalBook) {
-        const getRoleId = await this._roleRepository.getRoleByName('Member');
+      // if (userSubscription.noOfBook === totalBook) {
+      //   const getRoleId = await this._roleRepository.getRoleByName('Member');
 
-        // const getUserRole = await this._roleRepository.getUserRole(
-        //   newBook.createdBy,
-        // );
+      //   // const getUserRole = await this._roleRepository.getUserRole(
+      //   //   newBook.createdBy,
+      //   // );
 
-        await this._roleRepository.updateUserRoler(getRoleId.id, userRole.id);
-      }
+      //   await this._roleRepository.updateUserRoler(getRoleId.id, userRole.id);
+      // }
     }
 
     if (userRole.Role === 'Platform Admin') {
+      let getBookAuthor = null;
+      if (newBook.authorId) {
+        getBookAuthor = await this._bookRepository.getBookAuthorById(
+          newBook.authorId,
+        );
+      }
+
+      if (getBookAuthor === null) {
+        throw new NotFound('Author not found.');
+      }
       const findBookByName = await this._bookRepository.getBookByNameAndAuthor(
         newBook.bookName,
-        newBook.authorName,
+        getBookAuthor.name,
       );
 
       if (findBookByName === undefined || findBookByName === null) {
@@ -125,6 +140,8 @@ export class BookService implements IBookService {
         await this._bookRepository.updateBookStock(findBookByName.id, true);
         book = findBookByName;
       }
+
+      await this._userRepository.createUserBook(newBook.createdBy, book!.id);
     }
 
     return book;

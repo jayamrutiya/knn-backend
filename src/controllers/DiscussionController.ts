@@ -4,6 +4,7 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import BaseController from './BaseController';
 import * as express from 'express';
 import { NewDiscussion, UpdateDiscussion } from '../types/Discussion';
+import ENV from '../config/env';
 
 @injectable()
 export default class DiscussionController extends BaseController {
@@ -27,7 +28,7 @@ export default class DiscussionController extends BaseController {
 
       const newDiscussion: NewDiscussion = {
         titleImage: req.file
-          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         question,
         createdBy: BigInt(createdBy),
@@ -59,7 +60,7 @@ export default class DiscussionController extends BaseController {
       const updateDiscussion: UpdateDiscussion = {
         id: BigInt(req.params.id),
         titleImage: req.file
-          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         question,
         createdBy: BigInt(createdBy),

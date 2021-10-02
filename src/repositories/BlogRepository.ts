@@ -41,6 +41,9 @@ export class BlogRepository implements IBlogRepository {
           titleImage: newBlog.titleImage,
           blogWriter: newBlog.blogWriter,
         },
+        include: {
+          BlogWriter: true,
+        },
       });
 
       return blog;
@@ -97,6 +100,9 @@ export class BlogRepository implements IBlogRepository {
       const blog = await client.blog.findFirst({
         where: {
           id: blogId,
+        },
+        include: {
+          BlogWriter: true,
         },
       });
 

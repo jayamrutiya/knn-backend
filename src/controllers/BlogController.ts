@@ -4,6 +4,7 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import BaseController from './BaseController';
 import * as express from 'express';
 import { CreateBlogWriter, NewBlog, UpdateBlog } from '../types/Blog';
+import ENV from '../config/env';
 
 @injectable()
 export default class BlogController extends BaseController {
@@ -27,7 +28,7 @@ export default class BlogController extends BaseController {
         subTitle,
         body,
         titleImage: req.file
-          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         blogWriter: BigInt(blogWriter),
       };
@@ -96,7 +97,7 @@ export default class BlogController extends BaseController {
         subTitle,
         body,
         titleImage: req.file
-          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         blogWriter: BigInt(blogWriter),
       };
@@ -130,7 +131,7 @@ export default class BlogController extends BaseController {
       const newBlogWriter: CreateBlogWriter = {
         name,
         profilePicture: req.file
-          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : null,
         emailId,
         designation,

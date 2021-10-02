@@ -135,4 +135,16 @@ export class UserService implements IUserService {
 
     return order;
   }
+
+  async verifyUser(userId: bigint, isVerify: boolean): Promise<boolean> {
+    const userRole = await this._roleRepository.getUserRole(userId);
+    const getRoleId = await this._roleRepository.getRoleByName('Member');
+
+    await this._roleRepository.updateUserRoler(getRoleId.id, userRole.id);
+    return this._userRepository.verifyUser(userId, isVerify);
+  }
+
+  async getUser(userId: bigint): Promise<any> {
+    return this._userRepository.getUser(userId);
+  }
 }

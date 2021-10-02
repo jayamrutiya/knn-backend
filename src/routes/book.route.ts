@@ -13,6 +13,8 @@ const loggerService = Container.get<ILoggerService>(TYPES.LoggerService);
 const bookService = Container.get<IBookService>(TYPES.BookService);
 const bookController = new BookController(loggerService, bookService);
 
+router.get('/:id', (req, res) => bookController.getBookById(req, res));
+
 router.post('/', uploadBookTitleImage.single('titleImage'), (req, res) =>
   bookController.createBook(req, res),
 );

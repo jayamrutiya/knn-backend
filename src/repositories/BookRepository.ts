@@ -6,6 +6,7 @@ import { inject, injectable } from 'inversify';
 import {
   createBook,
   editBook,
+  GetBookAuthor,
   GetBookById,
   GetBookCategory,
   GetBookLikeDislike,
@@ -40,6 +41,15 @@ export class BookRepository implements IBookRepository {
       const book = await client.book.findFirst({
         where: {
           id: bookId,
+        },
+        include: {
+          BookAuthor: true,
+          BookReview: true,
+          BookLikeDislike: {
+            where: {
+              isLiked: true,
+            },
+          },
         },
       });
 
@@ -82,6 +92,7 @@ export class BookRepository implements IBookRepository {
               bookName: true,
               titleImage: true,
               avgRating: true,
+              price: true,
             },
           },
         },
@@ -121,7 +132,9 @@ export class BookRepository implements IBookRepository {
       const book = await client.book.findFirst({
         where: {
           bookName,
-          authorName,
+          BookAuthor: {
+            name: authorName,
+          },
         },
       });
 
@@ -136,6 +149,31 @@ export class BookRepository implements IBookRepository {
     }
   }
 
+  async getBookAuthorById(id: bigint): Promise<GetBookAuthor | null> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookAuthor = await client.bookAuthor.findFirst({
+        where: {
+          id,
+        },
+      });
+
+      return bookAuthor;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
   async createBook(newBook: createBook): Promise<GetBookById | undefined> {
     try {
       // Get the database client
@@ -144,13 +182,14 @@ export class BookRepository implements IBookRepository {
       return await client.book.create({
         data: {
           bookName: newBook.bookName,
-          authorName: newBook.authorName,
+          authorId: newBook.authorId,
           isbn: newBook.isbn,
           pages: newBook.pages,
           description: newBook.description,
           price: newBook.price,
           titleImage: newBook.titleImage,
           createdBy: newBook.createdBy,
+          verifyBy: newBook.verifyBy,
         },
       });
     } catch (error) {
@@ -239,7 +278,7 @@ export class BookRepository implements IBookRepository {
         },
         data: {
           bookName: updateBook.bookName,
-          authorName: updateBook.authorName,
+          authorId: updateBook.authorId,
           isbn: updateBook.isbn,
           pages: updateBook.pages,
           description: updateBook.description,

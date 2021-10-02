@@ -9,7 +9,10 @@ import {
 export interface IBookService {
   getBookById(bookId: bigint): Promise<GetBookById>;
 
-  createBook(newBook: createBook): Promise<GetBookById | undefined>;
+  createBook(
+    newBook: createBook,
+    authorName: string,
+  ): Promise<GetBookById | undefined>;
 
   createBookCategory(
     bookId: bigint,

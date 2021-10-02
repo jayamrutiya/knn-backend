@@ -4,6 +4,7 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import BaseController from './BaseController';
 import * as express from 'express';
 import { NewEvent, NewEventRegistration, UpdateEvent } from '../types/Event';
+import ENV from '../config/env';
 
 @injectable()
 export default class EventController extends BaseController {
@@ -39,7 +40,7 @@ export default class EventController extends BaseController {
         subTitle,
         body,
         titleImage: req.file
-          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         startAt: new Date(startAt),
         endAt: new Date(endAt),
@@ -89,7 +90,7 @@ export default class EventController extends BaseController {
         subTitle,
         body,
         titleImage: req.file
-          ? 'http://127.0.0.1:3000/images/' + req.file.filename
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         startAt: new Date(startAt),
         endAt: new Date(endAt),

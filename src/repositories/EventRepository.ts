@@ -114,6 +114,12 @@ export class EventRepository implements IEventRepository {
         where: {
           id: eventId,
         },
+        include: {
+          EventBenefits: true,
+          EventLearning: true,
+          EventRequirements: true,
+          EventSpeakers: true,
+        },
       });
 
       if (event == null) {

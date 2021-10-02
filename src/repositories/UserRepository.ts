@@ -571,4 +571,89 @@ export class UserRepository implements IUserRepository {
       await this._databaseService.disconnect();
     }
   }
+
+  async verifyUser(userId: bigint, isVerify: boolean): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const userData = await client.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          isVerify,
+        },
+      });
+
+      return userData !== null;
+    } catch (error) {
+      console.log(error);
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async getUser(userId: bigint): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const userData = await client.user.findFirst({
+        where: {
+          id: userId,
+        },
+        include: {
+          UserBook: {
+            select: {
+              Book: true,
+            },
+          },
+          UserSubscription: {
+            include: {
+              UserSubscriptionUsage: true,
+            },
+          },
+        },
+      });
+
+      return userData;
+    } catch (error) {
+      console.log(error);
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async createUserBook(userId: bigint, bookId: bigint): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const adduserBook = await client.userBook.create({
+        data: {
+          userId,
+          bookId,
+        },
+      });
+
+      return adduserBook;
+    } catch (error) {
+      console.log(error);
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
 }

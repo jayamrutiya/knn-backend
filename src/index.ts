@@ -15,7 +15,7 @@ app.get(
       `frame-ancestors 'self' ${domains.join(' ')}`,
     );
     // console.log(res.header('Content-Security-Policy'));
-    res.sendFile(`./public/${req.params.name}`, { root: __dirname });
+    res.sendFile(`./public/images/${req.params.name}`, { root: __dirname });
   },
 );
 

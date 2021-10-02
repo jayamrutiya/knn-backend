@@ -1,6 +1,7 @@
 import {
   createBook,
   editBook,
+  GetBookAuthor,
   GetBookById,
   GetBookCategory,
   GetBookLikeDislike,
@@ -68,4 +69,6 @@ export interface IBookRepository {
     bookId: bigint,
     avgRating: number | null,
   ): Promise<boolean>;
+
+  getBookAuthorById(id: bigint): Promise<GetBookAuthor | null>;
 }
