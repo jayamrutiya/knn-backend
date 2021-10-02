@@ -14,8 +14,8 @@ export function sendEmail(
     port: 465,
     service: 'gmail',
     auth: {
-      user: 'amrutiyajay98@gmail.com',
-      pass: 'jay@28101998',
+      user: 'test@gmail.com',
+      pass: 'Test@123',
     },
   });
 
