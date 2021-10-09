@@ -5,6 +5,7 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import { IUserService } from '../interfaces/IUserService';
 import UserController from '../controllers/UserController';
 import createUserValidator from '../validators/create-user.validator';
+import { uploadBookTitleImage } from '../config/multer';
 
 const router = express.Router();
 
@@ -18,8 +19,11 @@ router.get('/verifyUserName', (req, res) =>
   userController.doesUserNameExist(req, res),
 );
 
-router.post('/', (req: express.Request, res: express.Response) =>
-  userController.createUser(req, res),
+router.post(
+  '/',
+  uploadBookTitleImage.single('profilePicture'),
+  (req: express.Request, res: express.Response) =>
+    userController.createUser(req, res),
 );
 
 router.post('/cart/add', (req: express.Request, res: express.Response) =>

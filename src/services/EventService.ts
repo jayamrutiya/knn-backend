@@ -78,6 +78,15 @@ export class EventService implements IEventService {
       throw new NotFound('User not found');
     }
 
+    const userEvent = await this._eventRepository.getUserRegisterEvent(
+      createEventRegistration.userId,
+      createEventRegistration.eventId,
+    );
+
+    if (userEvent) {
+      throw new BadRequest('You alredy register in this event');
+    }
+
     const getEvent = await this._eventRepository.getEvent(
       createEventRegistration.eventId,
     );

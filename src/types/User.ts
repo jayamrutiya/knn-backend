@@ -4,6 +4,7 @@ export declare type CreateUser = {
   //   id: bigint;
   firstName: string;
   lastName: string;
+  profilePicture: string | null;
   userName: string;
   mobileNumber: string;
   emailId: string;
@@ -24,6 +25,7 @@ export declare type GetUser = {
   id: bigint;
   firstName: string;
   lastName: string;
+  profilePicture: string | null;
   userName: string;
   mobileNumber: string;
   emailId: string;

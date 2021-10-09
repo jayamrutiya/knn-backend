@@ -5,6 +5,7 @@ import { TYPES } from '../config/types';
 import SubscriptionController from '../controllers/SubscriptionController';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { ISubscriptionService } from '../interfaces/ISubscriptionService';
+import { uploadBookTitleImage } from '../config/multer';
 
 const router = express.Router();
 
@@ -32,8 +33,9 @@ router.get(
     subscriptionController.getAllSubscription(req, res),
 );
 
-router.put(
-  '/:subscriptionId/user/:userId',
+router.post(
+  '/user',
+  uploadBookTitleImage.array('titleImage', 3),
   (req: express.Request, res: express.Response) =>
     subscriptionController.userBuySubscription(req, res),
 );

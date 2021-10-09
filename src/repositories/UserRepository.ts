@@ -44,6 +44,7 @@ export class UserRepository implements IUserRepository {
         data: {
           firstName: newUser.firstName,
           lastName: newUser.lastName,
+          profilePicture: newUser.profilePicture,
           userName: newUser.userName,
           mobileNumber: newUser.mobileNumber,
           emailId: newUser.emailId,
@@ -58,6 +59,7 @@ export class UserRepository implements IUserRepository {
           id: true,
           firstName: true,
           lastName: true,
+          profilePicture: true,
           userName: true,
           mobileNumber: true,
           emailId: true,
@@ -583,6 +585,35 @@ export class UserRepository implements IUserRepository {
         },
         data: {
           isVerify,
+        },
+      });
+
+      return userData !== null;
+    } catch (error) {
+      console.log(error);
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async doneSubscriptionProcess(
+    userId: bigint,
+    isDone: boolean,
+  ): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const userData = await client.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          isSubscriptionComplete: isDone,
         },
       });
 

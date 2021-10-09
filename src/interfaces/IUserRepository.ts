@@ -62,7 +62,9 @@ export interface IUserRepository {
 
   verifyUser(userId: bigint, isVerify: boolean): Promise<boolean>;
 
+  doneSubscriptionProcess(userId: bigint, isDone: boolean): Promise<boolean>;
+
   getUser(userId: bigint): Promise<any>;
-  
-  createUserBook(userId: bigint, bookId: bigint): Promise<any>
+
+  createUserBook(userId: bigint, bookId: bigint): Promise<any>;
 }

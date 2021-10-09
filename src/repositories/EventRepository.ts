@@ -225,4 +225,33 @@ export class EventRepository implements IEventRepository {
       await this._databaseService.disconnect();
     }
   }
+
+  async getUserRegisterEvent(
+    userId: bigint,
+    eventId: bigint,
+  ): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const userEvent = await client.eventRegistration.findFirst({
+        where: {
+          userId,
+          eventId,
+        },
+      });
+
+      return userEvent !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
 }

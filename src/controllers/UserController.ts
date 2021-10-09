@@ -5,6 +5,7 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import { IUserService } from '../interfaces/IUserService';
 import { CreateUser } from '../types/User';
 import { Decimal } from '@prisma/client/runtime';
+import ENV from '../config/env';
 
 @injectable()
 export default class UserController extends BaseController {
@@ -71,6 +72,9 @@ export default class UserController extends BaseController {
       const newUser: CreateUser = {
         firstName,
         lastName,
+        profilePicture: req.file
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
+          : null,
         userName,
         emailId,
         mobileNumber,

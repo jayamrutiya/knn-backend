@@ -22,4 +22,6 @@ export interface IEventRepository {
     eventRegistrationId: bigint,
     isPaymentDone: boolean,
   ): Promise<any>;
+
+  getUserRegisterEvent(userId: bigint, eventId: bigint): Promise<boolean>;
 }

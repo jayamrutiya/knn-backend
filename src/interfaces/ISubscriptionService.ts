@@ -5,5 +5,7 @@ export interface ISubscriptionService {
 
   getAllSubscription(): Promise<GetSubscription[]>;
 
-  userBuySubscription(userId: bigint, subscriptionId: bigint): Promise<boolean>;
+  userBuySubscription(
+    userSubscription: any,
+  ): Promise<{ accessToken: string; refreshToken: string }>;
 }

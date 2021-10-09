@@ -17,19 +17,19 @@ import { EventTypes } from '../config/events';
 @injectable()
 export class AuthenticationService implements IAuthenticationService {
   private _loggerService: ILoggerService;
-  private _jwtService: IJwtService;
   private _userRepository: IUserRepository;
+  private _jwtService: IJwtService;
   private _roleRepository: IRoleRepository;
 
   constructor(
     @inject(TYPES.LoggerService) loggerService: ILoggerService,
-    @inject(TYPES.JwtService) jwtService: IJwtService,
     @inject(TYPES.UserRepository) userRepository: IUserRepository,
+    @inject(TYPES.JwtService) jwtService: IJwtService,
     @inject(TYPES.RoleRepository) roleRepository: IRoleRepository,
   ) {
     this._loggerService = loggerService;
-    this._jwtService = jwtService;
     this._userRepository = userRepository;
+    this._jwtService = jwtService;
     this._roleRepository = roleRepository;
     this._loggerService.getLogger().info(`Creating: ${this.constructor.name}`);
   }

@@ -125,6 +125,8 @@ export class BookService implements IBookService {
         );
       }
 
+      newBook.verifyBy = newBook.createdBy;
+
       if (getBookAuthor === null) {
         throw new NotFound('Author not found.');
       }

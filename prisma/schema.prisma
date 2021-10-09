@@ -11,42 +11,44 @@ generator client {
 }
 
 model User {
-    id                   BigInt                 @id @default(autoincrement())
-    firstName            String                 @db.VarChar(256)
-    lastName             String                 @db.VarChar(256)
-    userName             String                 @unique @db.VarChar(95)
-    mobileNumber         String                 @db.VarChar(15)
-    emailId              String                 @unique @db.VarChar(95)
-    password             String                 @db.Text
-    salt                 String                 @db.VarChar(256)
-    address              String                 @db.Text
-    city                 String?                @db.VarChar(256)
-    street               String?                @db.VarChar(256)
-    isSuspended          Boolean                @default(false)
-    isVerify             Boolean                @default(false)
-    createdAt            DateTime               @default(now()) @db.Timestamp(6)
-    updatedAt            DateTime?              @db.DateTime
-    Role                 Role[]
-    UserRole             UserRole[]
-    RefreshToken         RefreshToken[]
-    Category             Category[]
-    Book                 Book[]
-    usera                Book[]                 @relation("usera")
-    Subscription         Subscription[]
-    UserSubscription     UserSubscription[]
-    Cart                 Cart[]
-    Order                Order[]
-    UserCurrentBook      UserCurrentBook[]
-    UserBookExchangeLogs UserBookExchangeLogs[]
-    Event                Event[]
-    Discussion           Discussion[]
-    DiscussionAnswer     DiscussionAnswer[]
-    BookLikeDislike      BookLikeDislike[]
-    BookReview           BookReview[]
-    BookRating           BookRating[]
-    ForgotPassword       ForgotPassword[]
-    EventRegistration    EventRegistration[]
-    UserBook             UserBook[]
+    id                     BigInt                 @id @default(autoincrement())
+    firstName              String                 @db.VarChar(256)
+    lastName               String                 @db.VarChar(256)
+    profilePicture         String?                @db.Text
+    userName               String                 @unique @db.VarChar(95)
+    mobileNumber           String                 @db.VarChar(15)
+    emailId                String                 @unique @db.VarChar(95)
+    password               String                 @db.Text
+    salt                   String                 @db.VarChar(256)
+    address                String                 @db.Text
+    city                   String?                @db.VarChar(256)
+    street                 String?                @db.VarChar(256)
+    isSuspended            Boolean                @default(false)
+    isVerify               Boolean                @default(false)
+    isSubscriptionComplete Boolean                @default(false)
+    createdAt              DateTime               @default(now()) @db.Timestamp(6)
+    updatedAt              DateTime?              @db.DateTime
+    Role                   Role[]
+    UserRole               UserRole[]
+    RefreshToken           RefreshToken[]
+    Category               Category[]
+    Book                   Book[]
+    usera                  Book[]                 @relation("usera")
+    Subscription           Subscription[]
+    UserSubscription       UserSubscription[]
+    Cart                   Cart[]
+    Order                  Order[]
+    UserCurrentBook        UserCurrentBook[]
+    UserBookExchangeLogs   UserBookExchangeLogs[]
+    Event                  Event[]
+    Discussion             Discussion[]
+    DiscussionAnswer       DiscussionAnswer[]
+    BookLikeDislike        BookLikeDislike[]
+    BookReview             BookReview[]
+    BookRating             BookRating[]
+    ForgotPassword         ForgotPassword[]
+    EventRegistration      EventRegistration[]
+    UserBook               UserBook[]
 }
 
 model Role {

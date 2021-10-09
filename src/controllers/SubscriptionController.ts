@@ -3,6 +3,7 @@ import { injectable } from 'inversify';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { ISubscriptionService } from '../interfaces/ISubscriptionService';
 import BaseController from './BaseController';
+import ENV from '../config/env';
 
 @injectable()
 export default class SubscriptionController extends BaseController {
@@ -67,25 +68,46 @@ export default class SubscriptionController extends BaseController {
 
   async userBuySubscription(req: express.Request, res: express.Response) {
     try {
-      console.log('in userBuySubscription controller');
+      console.log('in userBuySubscription controller', req.body.bookName);
       // validate input
-      this.validateRequest(req);
-      const userId = BigInt(req.params.userId);
-      const subscriptionId = BigInt(req.params.subscriptionId);
+      // this.validateRequest(req);
+      console.log('files', req.files);
+      const files: any = req.files;
+      const fileData = [];
+      if (req.files) {
+        for (let i = 0; i < files.length; i++) {
+          fileData.push(
+            `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${files[i].filename}`,
+          );
+        }
+      }
 
-      const userSubscription = await this._subscriptionService.userBuySubscription(
-        userId,
-        subscriptionId,
+      const { bookName, authorName, userId, subscriptionId } = req.body;
+
+      const userSubscription = {
+        bookName: bookName.map((book: any) => book.toString().toLowerCase()),
+        authorName: authorName.map((authore: any) =>
+          authore.toString().toLowerCase(),
+        ),
+        titleImage: fileData,
+        userId: BigInt(userId),
+        subscriptionId: BigInt(subscriptionId),
+      };
+
+      console.log('userSubscription', userSubscription);
+
+      const usersubscription = await this._subscriptionService.userBuySubscription(
+        userSubscription,
       );
 
       //return response
       return this.sendJSONResponse(
         res,
-        userSubscription
+        usersubscription
           ? 'User buy subscription successfully'
           : 'Somthing went wrong',
         null,
-        null,
+        usersubscription,
       );
     } catch (error) {
       console.log(error, 'err');
