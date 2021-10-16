@@ -44,9 +44,17 @@ export interface IUserRepository {
     quantity: number,
   ): Promise<AddToCart>;
 
+  getCartById(cartId: bigint): Promise<any>;
+
+  getCartByUserIdAndBookId(userId: bigint, bookId: bigint): Promise<any>;
+
+  deleteCartItem(cartId: bigint): Promise<boolean>;
+
   createOrder(newOrder: NewOrder): Promise<GetOrder>;
 
   createOrderDetail(newOrderDetail: NewOrderDetail): Promise<boolean>;
+
+  createUserCurrentBook(orderId: bigint, userId: bigint): Promise<boolean>;
 
   deleteCartByUserId(userId: bigint): Promise<boolean>;
 

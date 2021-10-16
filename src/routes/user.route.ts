@@ -30,6 +30,14 @@ router.post('/cart/add', (req: express.Request, res: express.Response) =>
   userController.addToCart(req, res),
 );
 
+router.get('/:userId/cart', (req: express.Request, res: express.Response) =>
+  userController.getCartByUserId(req, res),
+);
+
+router.delete('/cart/:id', (req: express.Request, res: express.Response) =>
+  userController.deleteCartItem(req, res),
+);
+
 router.post('/order', (req: express.Request, res: express.Response) =>
   userController.generateOrder(req, res),
 );

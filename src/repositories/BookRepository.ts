@@ -77,9 +77,19 @@ export class BookRepository implements IBookRepository {
       const client = this._databaseService.Client();
 
       const book = await client.bookCategory.findMany({
-        where: {
-          categoryId,
-        },
+        where:
+          categoryId !== 0n
+            ? {
+                categoryId,
+                Book: {
+                  isActivated: true,
+                },
+              }
+            : {
+                Book: {
+                  isActivated: true,
+                },
+              },
         select: {
           Category: {
             select: {
@@ -93,6 +103,7 @@ export class BookRepository implements IBookRepository {
               titleImage: true,
               avgRating: true,
               price: true,
+              stock: true,
             },
           },
         },

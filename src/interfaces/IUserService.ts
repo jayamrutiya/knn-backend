@@ -13,8 +13,16 @@ export interface IUserService {
     quantity: number,
   ): Promise<AddToCart>;
 
+  getCartById(cartId: bigint): Promise<any>;
+
+  deleteCartItem(cartId: bigint): Promise<boolean>;
+
   generateOrder(
     userId: bigint,
+    firstName: string | null,
+    lastName: string | null,
+    emailId: string | null,
+    mobileNumber: string | null,
     deliveryAddress: string,
     totalAmount: Decimal,
   ): Promise<GetOrder>;
@@ -22,4 +30,6 @@ export interface IUserService {
   verifyUser(userId: bigint, isVerify: boolean): Promise<boolean>;
 
   getUser(userId: bigint): Promise<any>;
+
+  getCartByUserId(userId: bigint): Promise<any>;
 }

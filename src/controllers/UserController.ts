@@ -129,17 +129,78 @@ export default class UserController extends BaseController {
     }
   }
 
+  async getCartByUserId(req: express.Request, res: express.Response) {
+    try {
+      console.log('in addToCart');
+
+      // TODO: validate parameters
+
+      const userId = BigInt(req.params.userId);
+
+      const cart = await this._userService.getCartByUserId(userId);
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        {
+          length: cart.length,
+        },
+        cart,
+      );
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async deleteCartItem(req: express.Request, res: express.Response) {
+    try {
+      console.log('in deleteCartItem');
+
+      // TODO: validate parameters
+
+      const cartItemId = BigInt(req.params.id);
+
+      const cart = await this._userService.deleteCartItem(cartItemId);
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        cart ? 'Delete Successfully' : 'Something went wrong',
+        null,
+        null,
+      );
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
   async generateOrder(req: express.Request, res: express.Response) {
     try {
       // TODO: validate parameters
 
       const userId = BigInt(req.body.userId);
-      const deliveryAddress = req.body.deliveryAddress.toString();
+      const {
+        firstName,
+        lastName,
+        emailId,
+        mobileNumber,
+        deliveryAddress,
+      } = req.body;
+      // const deliveryAddress = req.body.deliveryAddress.toString();
       const totalAmount = new Decimal(req.body.totalAmount);
 
       const order = await this._userService.generateOrder(
         userId,
         deliveryAddress,
+        firstName,
+        lastName,
+        emailId,
+        mobileNumber,
         totalAmount,
       );
 

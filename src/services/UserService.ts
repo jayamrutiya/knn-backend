@@ -74,6 +74,15 @@ export class UserService implements IUserService {
 
     const book = await this._bookRepository.getBookById(bookId);
 
+    const cartdata = await this._userRepository.getCartByUserIdAndBookId(
+      userId,
+      bookId,
+    );
+
+    if (cartdata) {
+      throw new BadRequest('Book alredy in cart.');
+    }
+
     const cart = await this._userRepository.addToCart(userId, bookId, quantity);
 
     return cart;
@@ -81,7 +90,11 @@ export class UserService implements IUserService {
 
   async generateOrder(
     userId: bigint,
-    deliveryAddress: string,
+    deliveryAddress: string | null,
+    firstName: string | null,
+    lastName: string | null,
+    emailId: string | null,
+    mobileNumber: string | null,
     totalAmount: Decimal,
   ): Promise<GetOrder> {
     const user = await this._userRepository.getUserById(userId);
@@ -109,9 +122,21 @@ export class UserService implements IUserService {
       userId,
       deliveryAddress,
       totalAmount,
+      firstName,
+      lastName,
+      mobileNumber,
+      emailId,
     };
 
+    for (let i = 0; i < cart.length; i++) {
+      if (cart[i].Book.stock <= 0) {
+        throw new BadRequest(`${cart[i].Book.bookName} is out of stock.`);
+      }
+    }
+
     const order = await this._userRepository.createOrder(newOrderPayload);
+
+    await this._userRepository.createUserCurrentBook(order.id, userId);
 
     const newOrderDetailPayload: NewOrderDetail = cart.map((cartItem) => {
       return {
@@ -146,5 +171,23 @@ export class UserService implements IUserService {
 
   async getUser(userId: bigint): Promise<any> {
     return this._userRepository.getUser(userId);
+  }
+
+  async getCartByUserId(userId: bigint): Promise<any> {
+    const cart = await this._userRepository.getCartByUserId(userId);
+    return cart;
+  }
+
+  async getCartById(cartId: bigint): Promise<any> {
+    return this._userRepository.getCartById(cartId);
+  }
+
+  async deleteCartItem(cartId: bigint): Promise<boolean> {
+    const cart = await this._userRepository.getCartById(cartId);
+    if (cart === null) {
+      throw new NotFound('Cat item not found');
+    }
+
+    return this._userRepository.deleteCartItem(cartId);
   }
 }

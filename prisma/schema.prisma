@@ -276,7 +276,11 @@ model Order {
     userId               BigInt
     User                 User                   @relation(references: [id], fields: [userId])
     status               OrderStatus            @default(PENDING)
-    deliveryAddress      String                 @db.Text
+    firstName            String?                @db.VarChar(255)
+    lastName             String?                @db.VarChar(255)
+    emailId              String?                @db.VarChar(255)
+    mobileNumber         String?                @db.VarChar(15)
+    deliveryAddress      String?                @db.Text
     totalAmount          Decimal                @db.Decimal(10, 2)
     createdAt            DateTime               @default(now()) @db.Timestamp(6)
     updatedAt            DateTime?              @db.DateTime

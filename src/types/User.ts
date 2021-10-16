@@ -59,7 +59,11 @@ export declare type GetCartByUserId = {
 export declare type NewOrder = {
   // id: bigint
   userId: bigint;
-  deliveryAddress: string;
+  firstName: string | null;
+  lastName: string | null;
+  emailId: string | null;
+  mobileNumber: string | null;
+  deliveryAddress: string | null;
   totalAmount: Prisma.Decimal;
   // createdAt: Date;
   // updatedAt: Date | null;
@@ -69,7 +73,11 @@ export declare type GetOrder = {
   id: bigint;
   userId: bigint;
   status: OrderStatus;
-  deliveryAddress: string;
+  firstName: string | null;
+  lastName: string | null;
+  emailId: string | null;
+  mobileNumber: string | null;
+  deliveryAddress: string | null;
   totalAmount: Prisma.Decimal;
   createdAt: Date;
   updatedAt: Date | null;
