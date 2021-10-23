@@ -50,4 +50,8 @@ router.post('/info/:userId', (req: express.Request, res: express.Response) =>
   userController.getUser(req, res),
 );
 
+router.get('/:userId/count', (req: express.Request, res: express.Response) =>
+  userController.getUserWithCount(req, res),
+);
+
 export default router;

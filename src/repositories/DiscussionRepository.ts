@@ -37,6 +37,7 @@ export class DiscussionRepository implements IDiscussionRepository {
         data: {
           titleImage: newDiscussion.titleImage,
           question: newDiscussion.question,
+          description: newDiscussion.description,
           createdBy: newDiscussion.createdBy,
           categoryId: newDiscussion.categoryId,
         },
@@ -68,6 +69,7 @@ export class DiscussionRepository implements IDiscussionRepository {
         data: {
           titleImage: updateDiscussion.titleImage,
           question: updateDiscussion.question,
+          description: updateDiscussion.description,
           createdBy: updateDiscussion.createdBy,
           categoryId: updateDiscussion.categoryId,
           updatedAt: moment().format(),
@@ -125,12 +127,18 @@ export class DiscussionRepository implements IDiscussionRepository {
     }
   }
 
-  async getAllDiscussion(): Promise<GetDiscussion[]> {
+  async getAllDiscussion(categoryId: bigint | null): Promise<GetDiscussion[]> {
     try {
       // Get the database client
       const client = this._databaseService.Client();
 
       const discussion = await client.discussion.findMany({
+        where:
+          categoryId === null
+            ? {}
+            : {
+                categoryId,
+              },
         include: {
           User: true,
           DiscussionAnswer: {

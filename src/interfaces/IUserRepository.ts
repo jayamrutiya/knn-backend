@@ -75,4 +75,14 @@ export interface IUserRepository {
   getUser(userId: bigint): Promise<any>;
 
   createUserBook(userId: bigint, bookId: bigint): Promise<any>;
+
+  getUserLastSuccessOrder(userId: bigint): Promise<any>;
+
+  createBookExchangeLog(
+    userId: bigint,
+    previousOrderId: bigint,
+    latestOrderId: bigint,
+  ): Promise<any>;
+
+  getUserWithCount(userId: bigint): Promise<any>;
 }

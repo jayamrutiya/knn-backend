@@ -12,7 +12,7 @@ export interface IDiscussionService {
 
   getDiscussion(discussionId: bigint): Promise<GetDiscussion>;
 
-  getAllDiscussion(): Promise<GetDiscussion[]>;
+  getAllDiscussion(categoryId: bigint | null): Promise<GetDiscussion[]>;
 
   createAnswer(
     discussionId: bigint,

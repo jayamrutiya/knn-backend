@@ -24,13 +24,16 @@ export default class DiscussionController extends BaseController {
 
   async createDiscussion(req: express.Request, res: express.Response) {
     try {
-      const { question, createdBy, categoryId } = req.body;
+      console.log(req.body);
+
+      const { question, description, createdBy, categoryId } = req.body;
 
       const newDiscussion: NewDiscussion = {
         titleImage: req.file
           ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         question,
+        description,
         createdBy: BigInt(createdBy),
         categoryId: BigInt(categoryId),
       };
@@ -55,7 +58,7 @@ export default class DiscussionController extends BaseController {
 
   async updateDiscussion(req: express.Request, res: express.Response) {
     try {
-      const { question, createdBy, categoryId } = req.body;
+      const { question, description, createdBy, categoryId } = req.body;
 
       const updateDiscussion: UpdateDiscussion = {
         id: BigInt(req.params.id),
@@ -63,6 +66,7 @@ export default class DiscussionController extends BaseController {
           ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
         question,
+        description,
         createdBy: BigInt(createdBy),
         categoryId: BigInt(categoryId),
       };
@@ -107,7 +111,16 @@ export default class DiscussionController extends BaseController {
 
   async getAllDiscussion(req: express.Request, res: express.Response) {
     try {
-      const discussion = await this._discussionService.getAllDiscussion();
+      const categoryId =
+        req.query.categoryId === undefined ||
+        req.query.categoryId === 'null' ||
+        req.query.categoryId === null
+          ? null
+          : BigInt(req.query.categoryId.toString());
+
+      const discussion = await this._discussionService.getAllDiscussion(
+        categoryId,
+      );
 
       // Return response
       return this.sendJSONResponse(

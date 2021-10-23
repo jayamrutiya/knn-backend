@@ -257,4 +257,19 @@ export default class UserController extends BaseController {
       return this.sendErrorResponse(req, res, error);
     }
   }
+
+  async getUserWithCount(req: express.Request, res: express.Response) {
+    try {
+      const userId = req.params.userId;
+
+      const user = await this._userService.getUserWithCount(BigInt(userId));
+
+      // Return response
+      return this.sendJSONResponse(res, null, null, user);
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }

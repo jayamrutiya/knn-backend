@@ -32,4 +32,6 @@ export interface IUserService {
   getUser(userId: bigint): Promise<any>;
 
   getCartByUserId(userId: bigint): Promise<any>;
+
+  getUserWithCount(userId: bigint): Promise<any>;
 }

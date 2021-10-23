@@ -44,6 +44,14 @@ export class DiscussionService implements IDiscussionService {
   }
 
   async creatDiscussion(newDiscussion: NewDiscussion): Promise<GetDiscussion> {
+    const user = await this._userRepository.getUserById(
+      newDiscussion.createdBy,
+    );
+    if (user === null) {
+      throw new NotFound(
+        `User not found with userId ${newDiscussion.createdBy}`,
+      );
+    }
     return this._discussionRepository.creatDiscussion(newDiscussion);
   }
 
@@ -55,8 +63,8 @@ export class DiscussionService implements IDiscussionService {
     return this._discussionRepository.getDiscussion(discussionId);
   }
 
-  async getAllDiscussion(): Promise<GetDiscussion[]> {
-    return this._discussionRepository.getAllDiscussion();
+  async getAllDiscussion(categoryId: bigint | null): Promise<GetDiscussion[]> {
+    return this._discussionRepository.getAllDiscussion(categoryId);
   }
 
   async createAnswer(

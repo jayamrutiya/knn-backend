@@ -2,6 +2,7 @@ export declare type GetDiscussion = {
   id: bigint;
   titleImage: string;
   question: string;
+  description: string;
   createdBy: bigint;
   categoryId: bigint;
   createdAt: Date;
@@ -14,6 +15,7 @@ export declare type NewDiscussion = {
   //   id: bigint;
   titleImage: string;
   question: string;
+  description: string;
   createdBy: bigint;
   categoryId: bigint;
   //   createdAt: Date;
@@ -24,6 +26,7 @@ export declare type UpdateDiscussion = {
   id: bigint;
   titleImage: string;
   question: string;
+  description: string;
   createdBy: bigint;
   categoryId: bigint;
   //   createdAt: Date;

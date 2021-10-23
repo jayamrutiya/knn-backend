@@ -134,7 +134,24 @@ export class UserService implements IUserService {
       }
     }
 
+    let lastOrderId;
+    const lastOrder = await this._userRepository.getUserLastSuccessOrder(
+      userId,
+    );
+
     const order = await this._userRepository.createOrder(newOrderPayload);
+
+    if (lastOrder !== null) {
+      lastOrderId = lastOrder.id;
+    } else {
+      lastOrderId = order.id;
+    }
+
+    await this._userRepository.createBookExchangeLog(
+      userId,
+      lastOrderId,
+      order.id,
+    );
 
     await this._userRepository.createUserCurrentBook(order.id, userId);
 
@@ -189,5 +206,25 @@ export class UserService implements IUserService {
     }
 
     return this._userRepository.deleteCartItem(cartId);
+  }
+
+  async getUserWithCount(userId: bigint): Promise<any> {
+    const user = await this._userRepository.getUserWithCount(userId);
+    if (user === null) {
+      throw new NotFound('User not found');
+    }
+    const data = {
+      id: user.id,
+      profilePicture: user.profilePicture,
+      firstName: user.firstName,
+      emailId: user.emailId,
+      mobileNumber: user.mobileNumber,
+      address: user.address,
+      bookExchanged: user.UserBookExchangeLogs.length,
+      eventParticipated: user.EventRegistration.length,
+      discussions: user.Discussion.length,
+    };
+
+    return data;
   }
 }
