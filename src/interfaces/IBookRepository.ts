@@ -71,4 +71,8 @@ export interface IBookRepository {
   ): Promise<boolean>;
 
   getBookAuthorById(id: bigint): Promise<GetBookAuthor | null>;
+
+  trendingThisWeek(): Promise<any>;
+
+  mostLovedBooks(): Promise<any>;
 }

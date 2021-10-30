@@ -12,6 +12,7 @@ import {
   GetUser,
   NewOrder,
   NewOrderDetail,
+  UpdateUser,
 } from '../types/User';
 import { InternalServerError } from '../errors/InternalServerError';
 import moment from 'moment';
@@ -908,6 +909,35 @@ export class UserRepository implements IUserRepository {
       });
 
       return user;
+    } catch (error) {
+      console.log(error);
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async updateUser(updateUser: UpdateUser): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const updateuser = await client.user.update({
+        where: {
+          id: updateUser.id,
+        },
+        data: {
+          firstName: updateUser.firstName,
+          mobileNumber: updateUser.mobileNumber,
+          address: updateUser.address,
+          profilePicture: updateUser.profilePicture,
+        },
+      });
+
+      return updateuser;
     } catch (error) {
       console.log(error);
       this._loggerService.getLogger().error(`Error ${error}`);

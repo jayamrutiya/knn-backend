@@ -19,6 +19,21 @@ app.get(
   },
 );
 
+app.get(
+  `${ENV.API_ROOT}/images/Profile/:name`,
+  (req: express.Request, res: express.Response) => {
+    let domains = JSON.parse(allowlist);
+    res.header(
+      'Content-Security-Policy',
+      `frame-ancestors 'self' ${domains.join(' ')}`,
+    );
+    // console.log(res.header('Content-Security-Policy'));
+    res.sendFile(`./public/images/Profile/${req.params.name}`, {
+      root: __dirname,
+    });
+  },
+);
+
 // Start Express server
 app.listen(ENV.PORT, () => {
   const loggerService = Container.get<ILoggerService>(TYPES.LoggerService);

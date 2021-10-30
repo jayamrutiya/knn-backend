@@ -1,6 +1,12 @@
 import { User } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime';
-import { AddToCart, CreateUser, GetOrder, GetUser } from '../types/User';
+import {
+  AddToCart,
+  CreateUser,
+  GetOrder,
+  GetUser,
+  UpdateUser,
+} from '../types/User';
 
 export interface IUserService {
   createUser(newUser: CreateUser): Promise<GetUser>;
@@ -34,4 +40,6 @@ export interface IUserService {
   getCartByUserId(userId: bigint): Promise<any>;
 
   getUserWithCount(userId: bigint): Promise<any>;
+
+  updateUser(updateUser: UpdateUser): Promise<any>;
 }

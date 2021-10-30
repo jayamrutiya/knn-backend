@@ -258,4 +258,12 @@ export class BookService implements IBookService {
 
     return bookrating;
   }
+
+  async trendingThisWeek(): Promise<any> {
+    return this._bookRepository.trendingThisWeek();
+  }
+
+  async mostLovedBooks(): Promise<any> {
+    return this._bookRepository.mostLovedBooks();
+  }
 }

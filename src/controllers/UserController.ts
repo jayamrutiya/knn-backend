@@ -3,7 +3,7 @@ import BaseController from './BaseController';
 import { inject, injectable } from 'inversify';
 import { ILoggerService } from '../interfaces/ILoggerService';
 import { IUserService } from '../interfaces/IUserService';
-import { CreateUser } from '../types/User';
+import { CreateUser, UpdateUser } from '../types/User';
 import { Decimal } from '@prisma/client/runtime';
 import ENV from '../config/env';
 
@@ -131,7 +131,7 @@ export default class UserController extends BaseController {
 
   async getCartByUserId(req: express.Request, res: express.Response) {
     try {
-      console.log('in addToCart');
+      console.log('getCartByUserId');
 
       // TODO: validate parameters
 
@@ -183,6 +183,8 @@ export default class UserController extends BaseController {
     try {
       // TODO: validate parameters
 
+      console.log('body', req.body);
+
       const userId = BigInt(req.body.userId);
       const {
         firstName,
@@ -196,11 +198,11 @@ export default class UserController extends BaseController {
 
       const order = await this._userService.generateOrder(
         userId,
-        deliveryAddress,
         firstName,
         lastName,
         emailId,
         mobileNumber,
+        deliveryAddress,
         totalAmount,
       );
 
@@ -263,6 +265,34 @@ export default class UserController extends BaseController {
       const userId = req.params.userId;
 
       const user = await this._userService.getUserWithCount(BigInt(userId));
+
+      // Return response
+      return this.sendJSONResponse(res, null, null, user);
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async updateUser(req: express.Request, res: express.Response) {
+    try {
+      console.log(req.file);
+
+      // get parameters
+      const { firstName, mobileNumber, address } = req.body;
+
+      const updateUser: UpdateUser = {
+        id: BigInt(req.params.id),
+        firstName,
+        profilePicture: req.file
+          ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/Profile/${req.file.filename}`
+          : null,
+        mobileNumber,
+        address,
+      };
+
+      const user = await this._userService.updateUser(updateUser);
 
       // Return response
       return this.sendJSONResponse(res, null, null, user);

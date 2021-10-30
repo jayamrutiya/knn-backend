@@ -9,6 +9,7 @@ import {
   GetUser,
   NewOrder,
   NewOrderDetail,
+  UpdateUser,
 } from '../types/User';
 
 export interface IUserRepository {
@@ -85,4 +86,6 @@ export interface IUserRepository {
   ): Promise<any>;
 
   getUserWithCount(userId: bigint): Promise<any>;
+
+  updateUser(updateUser: UpdateUser): Promise<any>;
 }

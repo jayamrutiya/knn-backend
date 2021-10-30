@@ -302,4 +302,32 @@ export default class BookController extends BaseController {
       return this.sendErrorResponse(req, res, error);
     }
   }
+
+  async tredingThisWeek(req: express.Request, res: express.Response) {
+    try {
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        null,
+        await this._bookService.trendingThisWeek(),
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async mostLovedBooks(req: express.Request, res: express.Response) {
+    try {
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        null,
+        await this._bookService.mostLovedBooks(),
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }

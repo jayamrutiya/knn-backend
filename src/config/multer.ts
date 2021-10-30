@@ -29,3 +29,18 @@ export const uploadBookTitleImage = multer({
     fileSize: 1048576 * 5,
   },
 });
+
+export const uploadProfilePicture = multer({
+  storage: multer.diskStorage({
+    destination: function (req: any, file: any, cb: any) {
+      cb(null, './src/public/images/Profile/');
+    },
+    filename: function (req: any, file: any, cb: any) {
+      cb(null, file.fieldname + Date.now() + '.png');
+    },
+  }),
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 1048576 * 5,
+  },
+});

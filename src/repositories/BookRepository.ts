@@ -613,4 +613,122 @@ export class BookRepository implements IBookRepository {
       await this._databaseService.disconnect();
     }
   }
+
+  async trendingThisWeek(): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const currentDate = moment().format();
+      const pastDate = moment().subtract(7, 'days').format();
+
+      const book = await client.orderDetail.findMany({
+        where: {
+          Order: {
+            status: 'DELIVERED',
+          },
+          Book: {
+            isActivated: true,
+          },
+          createdAt: {
+            gte: pastDate,
+            lt: currentDate,
+          },
+        },
+        take: 4,
+        select: {
+          Book: {
+            select: {
+              id: true,
+              bookName: true,
+              price: true,
+              titleImage: true,
+              BookCategory: {
+                select: {
+                  Category: {
+                    select: {
+                      categoryName: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const responseData = await book.map((d) => {
+        return {
+          id: d.Book.id,
+          bookName: d.Book.bookName,
+          price: d.Book.price,
+          titleImage: d.Book.titleImage,
+          categoryName: d.Book.BookCategory[0].Category.categoryName,
+        };
+      });
+
+      return responseData;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async mostLovedBooks(): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const book = await client.book.findMany({
+        where: {
+          isActivated: true,
+          avgRating: {
+            gte: 2.5,
+          },
+        },
+        take: 10,
+        include: {
+          BookCategory: {
+            select: {
+              Category: {
+                select: {
+                  categoryName: true,
+                },
+              },
+            },
+          },
+          BookAuthor: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+
+      const responseData = await book.map((d) => {
+        return {
+          id: d.id,
+          titleImage: d.titleImage,
+          avgRating: d.avgRating,
+          bookName: d.bookName,
+          price: d.price,
+          categoryName: d.BookCategory[0].Category.categoryName,
+          authorName: d.BookAuthor?.name,
+        };
+      });
+
+      return responseData;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
 }

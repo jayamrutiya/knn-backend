@@ -145,7 +145,14 @@ export class EventRepository implements IEventRepository {
       // Get the database client
       const client = this._databaseService.Client();
 
-      const event = await client.event.findMany({});
+      const event = await client.event.findMany({
+        where: {
+          isActive: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
 
       return event;
     } catch (error) {

@@ -129,7 +129,14 @@ export class BlogRepository implements IBlogRepository {
       // Get the database client
       const client = this._databaseService.Client();
 
-      const blog = await client.blog.findMany({});
+      const blog = await client.blog.findMany({
+        include: {
+          BlogWriter: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
 
       return blog;
     } catch (error) {

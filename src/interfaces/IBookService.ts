@@ -49,4 +49,8 @@ export interface IBookService {
     bookId: bigint,
     rating: number,
   ): Promise<boolean>;
+
+  trendingThisWeek(): Promise<any>;
+
+  mostLovedBooks(): Promise<any>;
 }

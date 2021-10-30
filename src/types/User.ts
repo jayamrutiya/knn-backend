@@ -92,3 +92,11 @@ export declare type NewOrderDetail = {
   // createdAt: Date
   // updatedAt: Date | null
 }[];
+
+export declare type UpdateUser = {
+  id: bigint;
+  firstName: string;
+  mobileNumber: string;
+  address: string;
+  profilePicture: string | null;
+};

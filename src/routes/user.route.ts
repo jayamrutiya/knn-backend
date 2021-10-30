@@ -5,7 +5,7 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import { IUserService } from '../interfaces/IUserService';
 import UserController from '../controllers/UserController';
 import createUserValidator from '../validators/create-user.validator';
-import { uploadBookTitleImage } from '../config/multer';
+import { uploadBookTitleImage, uploadProfilePicture } from '../config/multer';
 
 const router = express.Router();
 
@@ -52,6 +52,13 @@ router.post('/info/:userId', (req: express.Request, res: express.Response) =>
 
 router.get('/:userId/count', (req: express.Request, res: express.Response) =>
   userController.getUserWithCount(req, res),
+);
+
+router.put(
+  '/:id',
+  uploadProfilePicture.single('profilePicture'),
+  (req: express.Request, res: express.Response) =>
+    userController.updateUser(req, res),
 );
 
 export default router;

@@ -10,6 +10,7 @@ import {
   GetUser,
   NewOrder,
   NewOrderDetail,
+  UpdateUser,
 } from '../types/User';
 import crypto from 'crypto';
 import { IRoleRepository } from '../interfaces/IRoleRepository';
@@ -90,11 +91,11 @@ export class UserService implements IUserService {
 
   async generateOrder(
     userId: bigint,
-    deliveryAddress: string | null,
     firstName: string | null,
     lastName: string | null,
     emailId: string | null,
     mobileNumber: string | null,
+    deliveryAddress: string | null,
     totalAmount: Decimal,
   ): Promise<GetOrder> {
     const user = await this._userRepository.getUserById(userId);
@@ -118,21 +119,24 @@ export class UserService implements IUserService {
       throw new BadRequest('Must buy 2 item per order.');
     }
 
-    const newOrderPayload: NewOrder = {
-      userId,
-      deliveryAddress,
-      totalAmount,
-      firstName,
-      lastName,
-      mobileNumber,
-      emailId,
-    };
+    let totalPrice: number = 0.0;
 
     for (let i = 0; i < cart.length; i++) {
       if (cart[i].Book.stock <= 0) {
         throw new BadRequest(`${cart[i].Book.bookName} is out of stock.`);
       }
+      totalPrice = Number(totalPrice) + Number(cart[i].Book.price);
     }
+
+    const newOrderPayload: NewOrder = {
+      userId,
+      firstName,
+      lastName,
+      emailId,
+      mobileNumber,
+      deliveryAddress,
+      totalAmount: new Decimal(totalPrice),
+    };
 
     let lastOrderId;
     const lastOrder = await this._userRepository.getUserLastSuccessOrder(
@@ -226,5 +230,17 @@ export class UserService implements IUserService {
     };
 
     return data;
+  }
+
+  async updateUser(updateUser: UpdateUser): Promise<any> {
+    const user = await this._userRepository.getUserWithCount(updateUser.id);
+    if (user === null) {
+      throw new NotFound('User not found');
+    }
+    if (updateUser.profilePicture === null) {
+      updateUser.profilePicture = user.profilePicture;
+    }
+
+    return this._userRepository.updateUser(updateUser);
   }
 }

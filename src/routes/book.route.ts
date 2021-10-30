@@ -13,6 +13,12 @@ const loggerService = Container.get<ILoggerService>(TYPES.LoggerService);
 const bookService = Container.get<IBookService>(TYPES.BookService);
 const bookController = new BookController(loggerService, bookService);
 
+router.get('/trading', (req, res) => bookController.tredingThisWeek(req, res));
+
+router.get('/most/loved', (req, res) =>
+  bookController.mostLovedBooks(req, res),
+);
+
 router.get('/:id', (req, res) => bookController.getBookById(req, res));
 
 router.post('/', uploadBookTitleImage.single('titleImage'), (req, res) =>
