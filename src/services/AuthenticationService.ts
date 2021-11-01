@@ -185,4 +185,26 @@ export class AuthenticationService implements IAuthenticationService {
 
     return true;
   }
+
+  async getUpdatedTokens(userId: bigint): Promise<Login> {
+    const userRole = await this._roleRepository.getUserRole(userId);
+
+    const accessToken = this._jwtService.generateToken(
+      userRole,
+      ENV.ACCESS_TOKEN_SECRET!,
+      ENV.ACCESS_TOKEN_EXPIRES_IN!,
+    );
+
+    // Create a Refresh token
+    const refreshToken = this._jwtService.generateToken(
+      userRole,
+      ENV.REFRESH_TOKEN_SECRET!,
+      ENV.REFRESH_TOKEN_EXPIRES_IN!,
+    );
+
+    await this._userRepository.storeRefreshToken(userId, refreshToken);
+
+    // Return token
+    return { accessToken, refreshToken };
+  }
 }

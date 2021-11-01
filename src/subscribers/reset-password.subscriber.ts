@@ -19,7 +19,7 @@ export async function sendResetPasswordEmail(args: any) {
 
   // Get the database client
   const client = databaseService.Client();
-  const body = `<p>We recieved a request to reset your account password. Please <a href="${ENV.APP_BASE_URL}/${ENV.API_ROOT}/auth/password/reset?userId=${args.userId}&nonce=${args.nonce}">click here</a> to reset you password.</p>`;
+  const body = `<p>We recieved a request to reset your account password. Please <a href="${ENV.RESET_PASSWORD_ROUTE}?userId=${args.userId}&nonce=${args.nonce}">click here</a> to reset you password.</p>`;
   const subject = 'Knn - Password Reset';
   console.log(body);
 

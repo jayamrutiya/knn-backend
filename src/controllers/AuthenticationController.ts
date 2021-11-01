@@ -116,4 +116,19 @@ export default class AuthenticationController extends BaseController {
       this.sendErrorResponse(req, res, error);
     }
   }
+
+  async getUpdatedTokens(req: express.Request, res: express.Response) {
+    try {
+      const userId = BigInt(req.params.userId);
+
+      const user = await this._authenticationService.getUpdatedTokens(userId);
+
+      // send response
+      this.sendJSONResponse(res, 'Logged in successfully!', { size: 1 }, user);
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }

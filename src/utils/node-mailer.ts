@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import ENV from '../config/env';
 
 export function sendEmail(
   fromAddress: string,
@@ -14,8 +15,8 @@ export function sendEmail(
     port: 465,
     service: 'gmail',
     auth: {
-      user: 'test@gmail.com',
-      pass: 'Test@123',
+      user: ENV.EMAIL_SENDER_ADDRESS,
+      pass: ENV.EMAIL_SENDER_PASSWORD,
     },
   });
 

@@ -36,4 +36,8 @@ router.post('/password/reset', (req: express.Request, res: express.Response) =>
   authenticationController.resetPassword(req, res),
 );
 
+router.get('/:userId/tokens', (req: express.Request, res: express.Response) =>
+  authenticationController.getUpdatedTokens(req, res),
+);
+
 export default router;

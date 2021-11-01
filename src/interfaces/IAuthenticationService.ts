@@ -12,4 +12,6 @@ export interface IAuthenticationService {
     password: string,
     nonce: string,
   ): Promise<boolean>;
+
+  getUpdatedTokens(userId: bigint): Promise<Login>;
 }
