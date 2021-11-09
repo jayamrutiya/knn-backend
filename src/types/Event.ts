@@ -4,6 +4,7 @@ export declare type GetEvent = {
   subTitle: string;
   body: string;
   titleImage: string;
+  videoLink: string | null;
   startAt: Date;
   endAt: Date | null;
   shifts: string;
@@ -24,6 +25,7 @@ export declare type NewEvent = {
   subTitle: string;
   body: string;
   titleImage: string;
+  videoLink: string | null;
   startAt: Date;
   endAt: Date | null;
   shifts: string;
@@ -44,6 +46,7 @@ export declare type UpdateEvent = {
   subTitle: string;
   body: string;
   titleImage: string;
+  videoLink: string | null;
   startAt: Date;
   endAt: Date | null;
   shifts: string;

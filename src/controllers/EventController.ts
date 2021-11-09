@@ -24,6 +24,7 @@ export default class EventController extends BaseController {
       const {
         title,
         subTitle,
+        videoLink,
         body,
         startAt,
         endAt,
@@ -42,6 +43,7 @@ export default class EventController extends BaseController {
         titleImage: req.file
           ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
+        videoLink,
         startAt: new Date(startAt),
         endAt: new Date(endAt),
         shifts,
@@ -73,6 +75,7 @@ export default class EventController extends BaseController {
       const {
         title,
         subTitle,
+        videoLink,
         body,
         startAt,
         endAt,
@@ -92,6 +95,7 @@ export default class EventController extends BaseController {
         titleImage: req.file
           ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
           : 'no image',
+        videoLink,
         startAt: new Date(startAt),
         endAt: new Date(endAt),
         shifts,

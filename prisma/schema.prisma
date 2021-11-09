@@ -336,6 +336,7 @@ model Event {
     subTitle          String              @db.VarChar(256)
     body              String              @db.Text
     titleImage        String              @db.Text
+    videoLink         String?             @db.Text
     startAt           DateTime            @db.Timestamp(6)
     endAt             DateTime?           @db.DateTime
     shifts            String              @db.VarChar(256)
