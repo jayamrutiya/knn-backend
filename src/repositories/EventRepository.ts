@@ -9,7 +9,11 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import {
   GetEvent,
   NewEvent,
+  NewEventBenefits,
+  NewEventLearning,
   NewEventRegistration,
+  NewEventRequirements,
+  NewEventSpeakers,
   UpdateEvent,
 } from '../types/Event';
 
@@ -142,21 +146,79 @@ export class EventRepository implements IEventRepository {
     }
   }
 
-  async getAllEvent(): Promise<GetEvent[]> {
+  async getAllEvent(all: boolean): Promise<GetEvent[]> {
     try {
       // Get the database client
       const client = this._databaseService.Client();
 
       const event = await client.event.findMany({
-        where: {
-          isActive: true,
-        },
+        where:
+          all === false
+            ? {
+                isActive: true,
+              }
+            : {},
         orderBy: {
           createdAt: 'desc',
         },
       });
 
       return event;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async deleteEvent(eventId: bigint): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      await client.eventBenefits.deleteMany({
+        where: {
+          eventId,
+        },
+      });
+
+      await client.eventLearning.deleteMany({
+        where: {
+          eventId,
+        },
+      });
+
+      await client.eventRequirements.deleteMany({
+        where: {
+          eventId,
+        },
+      });
+
+      await client.eventRequirements.deleteMany({
+        where: {
+          eventId,
+        },
+      });
+
+      await client.eventSpeakers.deleteMany({
+        where: {
+          eventId,
+        },
+      });
+
+      const deleteEvent = await client.event.delete({
+        where: {
+          id: eventId,
+        },
+      });
+
+      return deleteEvent !== null;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       if (error instanceof NotFound) {
@@ -251,6 +313,147 @@ export class EventRepository implements IEventRepository {
       });
 
       return userEvent !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async cretateNewEventBenefits(
+    newEventBebefits: NewEventBenefits,
+  ): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const eventBenefits = await client.eventBenefits.create({
+        data: {
+          eventId: newEventBebefits.eventId,
+          benefits: newEventBebefits.benefits,
+        },
+      });
+
+      return eventBenefits;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async cretateNewEventSpeakers(
+    newEventSpeakers: NewEventSpeakers,
+  ): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const eventSpeakers = await client.eventSpeakers.create({
+        data: {
+          eventId: newEventSpeakers.eventId,
+          name: newEventSpeakers.name,
+          profilePicture: newEventSpeakers.profilePicture,
+          designation: newEventSpeakers.designation,
+          company: newEventSpeakers.company,
+        },
+      });
+
+      return eventSpeakers;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async createNewEventReq(newEventReq: NewEventRequirements): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const eventRequirements = await client.eventRequirements.create({
+        data: {
+          eventId: newEventReq.eventId,
+          requirements: newEventReq.requirements,
+        },
+      });
+
+      return eventRequirements;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async createNewEventLearning(
+    newEventLearning: NewEventLearning,
+  ): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const eventLearning = await client.eventLearning.create({
+        data: {
+          eventId: newEventLearning.eventId,
+          learning: newEventLearning.learning,
+        },
+      });
+
+      return eventLearning;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async eventStatusChanged(eventId: bigint, status: boolean): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const eventStatus = await client.event.update({
+        where: {
+          id: eventId,
+        },
+        data: {
+          isActive: status,
+        },
+      });
+
+      return eventStatus !== null;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       if (error instanceof NotFound) {

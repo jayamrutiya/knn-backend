@@ -1,7 +1,11 @@
 import {
   GetEvent,
   NewEvent,
+  NewEventBenefits,
+  NewEventLearning,
   NewEventRegistration,
+  NewEventRequirements,
+  NewEventSpeakers,
   UpdateEvent,
 } from '../types/Event';
 
@@ -12,7 +16,7 @@ export interface IEventRepository {
 
   getEvent(eventId: bigint): Promise<GetEvent>;
 
-  getAllEvent(): Promise<GetEvent[]>;
+  getAllEvent(all: boolean): Promise<GetEvent[]>;
 
   eventRegistration(
     createEventRegistration: NewEventRegistration,
@@ -24,4 +28,16 @@ export interface IEventRepository {
   ): Promise<any>;
 
   getUserRegisterEvent(userId: bigint, eventId: bigint): Promise<boolean>;
+
+  cretateNewEventBenefits(newEventBebefits: NewEventBenefits): Promise<any>;
+
+  cretateNewEventSpeakers(newEventSpeakers: NewEventSpeakers): Promise<any>;
+
+  createNewEventReq(newEventReq: NewEventRequirements): Promise<any>;
+
+  createNewEventLearning(newEventLearning: NewEventLearning): Promise<any>;
+
+  deleteEvent(eventId: bigint): Promise<boolean>;
+
+  eventStatusChanged(eventId: bigint, status: boolean): Promise<boolean>;
 }

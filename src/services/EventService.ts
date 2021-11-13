@@ -13,7 +13,11 @@ import { IUserRepository } from '../interfaces/IUserRepository';
 import {
   GetEvent,
   NewEvent,
+  NewEventBenefits,
+  NewEventLearning,
   NewEventRegistration,
+  NewEventRequirements,
+  NewEventSpeakers,
   UpdateEvent,
 } from '../types/Event';
 
@@ -63,8 +67,8 @@ export class EventService implements IEventService {
     return this._eventRepository.getEvent(eventId);
   }
 
-  async getAllEvent(): Promise<GetEvent[]> {
-    return this._eventRepository.getAllEvent();
+  async getAllEvent(all: boolean): Promise<GetEvent[]> {
+    return this._eventRepository.getAllEvent(all);
   }
 
   async eventRegistration(
@@ -149,5 +153,51 @@ export class EventService implements IEventService {
     }
 
     return paymentDone;
+  }
+
+  async cretateNewEventBenefits(
+    newEventBebefits: NewEventBenefits,
+  ): Promise<any> {
+    const getEvent = await this._eventRepository.getEvent(
+      newEventBebefits.eventId,
+    );
+
+    return this._eventRepository.cretateNewEventBenefits(newEventBebefits);
+  }
+
+  async cretateNewEventSpeakers(
+    newEventSpeakers: NewEventSpeakers,
+  ): Promise<any> {
+    const getEvent = await this._eventRepository.getEvent(
+      newEventSpeakers.eventId,
+    );
+
+    return this._eventRepository.cretateNewEventSpeakers(newEventSpeakers);
+  }
+
+  async createNewEventReq(newEventReq: NewEventRequirements): Promise<any> {
+    const getEvent = await this._eventRepository.getEvent(newEventReq.eventId);
+
+    return this._eventRepository.createNewEventReq(newEventReq);
+  }
+
+  async createNewEventLearning(
+    newEventLearning: NewEventLearning,
+  ): Promise<any> {
+    const getEvent = await this._eventRepository.getEvent(
+      newEventLearning.eventId,
+    );
+
+    return this._eventRepository.createNewEventLearning(newEventLearning);
+  }
+
+  async deleteEvent(eventId: bigint): Promise<boolean> {
+    const getEvent = await this._eventRepository.getEvent(eventId);
+    return this._eventRepository.deleteEvent(eventId);
+  }
+
+  async eventStatusChanged(eventId: bigint, status: boolean): Promise<boolean> {
+    const getEvent = await this._eventRepository.getEvent(eventId);
+    return this._eventRepository.eventStatusChanged(eventId, status);
   }
 }

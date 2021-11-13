@@ -140,6 +140,7 @@ export class DiscussionRepository implements IDiscussionRepository {
                 categoryId,
               },
         include: {
+          Category: true,
           User: true,
           DiscussionAnswer: {
             include: {

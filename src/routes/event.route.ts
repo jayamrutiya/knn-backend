@@ -33,4 +33,28 @@ router.post('/verify/payment', (req, res) =>
   eventController.veifyUserEventPayment(req, res),
 );
 
+router.post('/benefits', (req, res) =>
+  eventController.cretateNewEventBenefits(req, res),
+);
+
+router.post(
+  '/speaker',
+  uploadBookTitleImage.single('profilePicture'),
+  (req, res) => eventController.cretateNewEventSpeakers(req, res),
+);
+
+router.post('/requirements', (req, res) =>
+  eventController.createNewEventReq(req, res),
+);
+
+router.post('/learning', (req, res) =>
+  eventController.createNewEventLearning(req, res),
+);
+
+router.delete('/:eventId', (req, res) => eventController.deleteEvent(req, res));
+
+router.put('/status/:eventId', (req, res) =>
+  eventController.eventStatusChanged(req, res),
+);
+
 export default router;
