@@ -108,9 +108,9 @@ export default class EventController extends BaseController {
         endAt: new Date(endAt),
         shifts,
         eligibility,
-        fee,
+        fee: parseInt(fee),
         venue,
-        registrationEndAt,
+        registrationEndAt: new Date(registrationEndAt),
         createdBy: BigInt(createdBy),
       };
 

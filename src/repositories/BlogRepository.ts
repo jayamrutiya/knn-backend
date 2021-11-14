@@ -185,4 +185,29 @@ export class BlogRepository implements IBlogRepository {
       await this._databaseService.disconnect();
     }
   }
+
+  async deleteBlog(blogId: bigint): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const blog = await client.blog.delete({
+        where: {
+          id: blogId,
+        },
+      });
+
+      return blog !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
 }

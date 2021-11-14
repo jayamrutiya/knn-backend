@@ -31,4 +31,6 @@ router.post(
   (req, res) => blogController.createBlogWriter(req, res),
 );
 
+router.delete('/:blogId', (req, res) => blogController.deleteBlog(req, res));
+
 export default router;

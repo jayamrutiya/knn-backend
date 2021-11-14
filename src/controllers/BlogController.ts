@@ -156,4 +156,22 @@ export default class BlogController extends BaseController {
       return this.sendErrorResponse(req, res, error);
     }
   }
+
+  async deleteBlog(req: express.Request, res: express.Response) {
+    try {
+      const blogId = BigInt(req.params.blogId);
+
+      const blog = await this._blogService.deleteBlog(blogId);
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        'Blog deleted successfully',
+        null,
+        null,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }

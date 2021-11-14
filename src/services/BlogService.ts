@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import env from '../config/env';
 import { TYPES } from '../config/types';
 import { IBlogRepository } from '../interfaces/IBlogRepository';
 import { IBlogService } from '../interfaces/IBlogService';
@@ -13,6 +14,7 @@ import {
   NewBlog,
   UpdateBlog,
 } from '../types/Blog';
+import fs from 'fs';
 
 @injectable()
 export class BlogService implements IBlogService {
@@ -63,5 +65,13 @@ export class BlogService implements IBlogService {
     newCreateBlogWriter: CreateBlogWriter,
   ): Promise<GetBlogWriter> {
     return this._blogRepository.createBlogWrite(newCreateBlogWriter);
+  }
+
+  async deleteBlog(blogId: bigint): Promise<boolean> {
+    const blog = await this._blogRepository.getBlog(blogId);
+    await fs.unlinkSync(
+      `${env.DIRECTORY}${blog.titleImage.split(/images/)[1]}`,
+    );
+    return this._blogRepository.deleteBlog(blogId);
   }
 }

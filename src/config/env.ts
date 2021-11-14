@@ -40,5 +40,7 @@ export default {
   RESET_PASSWORD_ROUTE: process.env.RESET_PASSWORD_ROUTE,
   APP_BASE_URL: process.env.APP_BASE_URL,
 
+  DIRECTORY: process.env.DIRECTORY,
+
   ALLOW_CORS_DOMAIN: process.env.ALLOW_CORS_DOMAIN!,
 };

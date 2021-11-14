@@ -20,6 +20,8 @@ import {
   NewEventSpeakers,
   UpdateEvent,
 } from '../types/Event';
+import fs from 'fs';
+import env from '../config/env';
 
 @injectable()
 export class EventService implements IEventService {
@@ -59,7 +61,14 @@ export class EventService implements IEventService {
   }
 
   async updateEvent(updateEvent: UpdateEvent): Promise<boolean> {
-    await this._eventRepository.getEvent(updateEvent.id);
+    const event = await this._eventRepository.getEvent(updateEvent.id);
+    if (updateEvent.titleImage === 'no image') {
+      updateEvent.titleImage = event.titleImage;
+    } else {
+      await fs.unlinkSync(
+        `${env.DIRECTORY}${event.titleImage.split(/images/)[1]}`,
+      );
+    }
     return this._eventRepository.updateEvent(updateEvent);
   }
 
@@ -198,6 +207,9 @@ export class EventService implements IEventService {
 
   async eventStatusChanged(eventId: bigint, status: boolean): Promise<boolean> {
     const getEvent = await this._eventRepository.getEvent(eventId);
+    await fs.unlinkSync(
+      `${env.DIRECTORY}${getEvent.titleImage.split(/images/)[1]}`,
+    );
     return this._eventRepository.eventStatusChanged(eventId, status);
   }
 }

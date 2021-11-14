@@ -18,4 +18,6 @@ export interface IBlogRepository {
   createBlogWrite(
     newCreateBlogWriter: CreateBlogWriter,
   ): Promise<GetBlogWriter>;
+
+  deleteBlog(blogId: bigint): Promise<boolean>;
 }

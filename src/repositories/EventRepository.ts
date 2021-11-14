@@ -125,6 +125,11 @@ export class EventRepository implements IEventRepository {
           EventLearning: true,
           EventRequirements: true,
           EventSpeakers: true,
+          EventRegistration: {
+            include: {
+              User: true,
+            },
+          },
         },
       });
 
