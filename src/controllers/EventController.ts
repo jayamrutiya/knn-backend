@@ -235,7 +235,12 @@ export default class EventController extends BaseController {
       );
 
       // Return response
-      return this.sendJSONResponse(res, null, null, eventBenefits);
+      return this.sendJSONResponse(
+        res,
+        'Benefits created successfully.',
+        null,
+        eventBenefits,
+      );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);
     }
@@ -260,7 +265,12 @@ export default class EventController extends BaseController {
       );
 
       // Return response
-      return this.sendJSONResponse(res, null, null, createEventSpeakers);
+      return this.sendJSONResponse(
+        res,
+        'Speaker created successfully.',
+        null,
+        createEventSpeakers,
+      );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);
     }
@@ -278,7 +288,12 @@ export default class EventController extends BaseController {
       const eventReq = await this._eventService.createNewEventReq(newEeventReq);
 
       // Return response
-      return this.sendJSONResponse(res, null, null, eventReq);
+      return this.sendJSONResponse(
+        res,
+        'Requirements created successfully.',
+        null,
+        eventReq,
+      );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);
     }
@@ -298,7 +313,12 @@ export default class EventController extends BaseController {
       );
 
       // Return response
-      return this.sendJSONResponse(res, null, null, eventLearning);
+      return this.sendJSONResponse(
+        res,
+        'Learning created successfully.',
+        null,
+        eventLearning,
+      );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);
     }
@@ -339,6 +359,20 @@ export default class EventController extends BaseController {
         null,
         null,
       );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async deleteBLRS(req: express.Request, res: express.Response) {
+    try {
+      const eventId = BigInt(req.params.id);
+      const table = req.query.table ? req.query.table.toString() : '';
+
+      const blrs = await this._eventService.deleteBLRS(eventId, table);
+
+      // Return response
+      return this.sendJSONResponse(res, 'Deleted successfully', null, null);
     } catch (error) {
       return this.sendErrorResponse(req, res, error);
     }

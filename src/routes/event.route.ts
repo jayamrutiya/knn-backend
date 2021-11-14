@@ -51,6 +51,8 @@ router.post('/learning', (req, res) =>
   eventController.createNewEventLearning(req, res),
 );
 
+router.delete('/blsr/:id', (req, res) => eventController.deleteBLRS(req, res));
+
 router.delete('/:eventId', (req, res) => eventController.deleteEvent(req, res));
 
 router.put('/status/:eventId', (req, res) =>

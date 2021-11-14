@@ -212,4 +212,8 @@ export class EventService implements IEventService {
     );
     return this._eventRepository.eventStatusChanged(eventId, status);
   }
+
+  async deleteBLRS(id: bigint, table: string): Promise<boolean> {
+    return this._eventRepository.deleteBLRS(id, table);
+  }
 }

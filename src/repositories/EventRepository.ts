@@ -471,4 +471,57 @@ export class EventRepository implements IEventRepository {
       await this._databaseService.disconnect();
     }
   }
+
+  async deleteBLRS(id: bigint, table: string): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      let returnObject: any = false;
+
+      if (table === 'Benefits') {
+        returnObject = await client.eventBenefits.delete({
+          where: {
+            id,
+          },
+        });
+      }
+
+      if (table === 'Learning') {
+        returnObject = await client.eventLearning.delete({
+          where: {
+            id,
+          },
+        });
+      }
+
+      if (table === 'Requirement') {
+        returnObject = await client.eventRequirements.delete({
+          where: {
+            id,
+          },
+        });
+      }
+
+      if (table === 'Speaker') {
+        returnObject = await client.eventSpeakers.delete({
+          where: {
+            id,
+          },
+        });
+      }
+
+      return returnObject !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
 }

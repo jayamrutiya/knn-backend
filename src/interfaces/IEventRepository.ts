@@ -40,4 +40,6 @@ export interface IEventRepository {
   deleteEvent(eventId: bigint): Promise<boolean>;
 
   eventStatusChanged(eventId: bigint, status: boolean): Promise<boolean>;
+
+  deleteBLRS(id: bigint, table: string): Promise<boolean>;
 }
