@@ -21,6 +21,8 @@ export interface IBookRepository {
 
   getBookByCategory(categoryId: bigint): Promise<any>;
 
+  getBooks(): Promise<any>;
+
   getBookByNameAndAuthor(
     bookName: string,
     authorName: string,
@@ -75,4 +77,6 @@ export interface IBookRepository {
   trendingThisWeek(): Promise<any>;
 
   mostLovedBooks(): Promise<any>;
+
+  createBookAuthor(name: string): Promise<any>;
 }

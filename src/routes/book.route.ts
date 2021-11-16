@@ -33,6 +33,8 @@ router.get('/category/:categoryId', (req, res) =>
   bookController.getBookByCategory(req, res),
 );
 
+router.get('/', (req, res) => bookController.getBooks(req, res));
+
 router.put('/:id', uploadBookTitleImage.single('titleImage'), (req, res) =>
   bookController.editBook(req, res),
 );

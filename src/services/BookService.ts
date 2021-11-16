@@ -160,6 +160,10 @@ export class BookService implements IBookService {
     return this._bookRepository.getBookByCategory(categoryId);
   }
 
+  async getBooks(): Promise<any> {
+    return this._bookRepository.getBooks();
+  }
+
   async getBookByNameAndAuthor(
     bookName: string,
     authorName: string,

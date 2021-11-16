@@ -71,12 +71,82 @@ export class BookRepository implements IBookRepository {
     }
   }
 
+  async getBooks(): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const book = await client.book.findMany({
+        orderBy: {
+          createdAt: 'desc',
+        },
+        select: {
+          id: true,
+          bookName: true,
+          titleImage: true,
+          isbn: true,
+          avgRating: true,
+          price: true,
+          stock: true,
+          isActivated: true,
+          BookAuthor: {
+            select: {
+              name: true,
+            },
+          },
+          User: {
+            select: {
+              UserRole: {
+                select: {
+                  Role: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      console.log('book', book);
+
+      const bookDetails = await book.map((d) => {
+        return {
+          ...d,
+          authorName: d.BookAuthor ? d.BookAuthor.name : null,
+          createdBy:
+            d.User.UserRole[0].Role.name === 'Member' ||
+            d.User.UserRole[0].Role.name === 'User'
+              ? 'User'
+              : 'Platform Admin',
+        };
+      });
+
+      return bookDetails;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
   async getBookByCategory(categoryId: bigint): Promise<any> {
     try {
       // Get the database client
       const client = this._databaseService.Client();
 
       const book = await client.bookCategory.findMany({
+        orderBy: {
+          bookId: 'desc',
+        },
         where:
           categoryId !== 0n
             ? {
@@ -101,9 +171,29 @@ export class BookRepository implements IBookRepository {
               id: true,
               bookName: true,
               titleImage: true,
+              isbn: true,
               avgRating: true,
               price: true,
               stock: true,
+              isActivated: true,
+              BookAuthor: {
+                select: {
+                  name: true,
+                },
+              },
+              User: {
+                select: {
+                  UserRole: {
+                    select: {
+                      Role: {
+                        select: {
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -115,6 +205,12 @@ export class BookRepository implements IBookRepository {
         return {
           ...d.Book,
           categoryName: d.Category.categoryName,
+          authorName: d.Book.BookAuthor ? d.Book.BookAuthor.name : null,
+          createdBy:
+            d.Book.User.UserRole[0].Role.name === 'Member' ||
+            d.Book.User.UserRole[0].Role.name === 'User'
+              ? 'User'
+              : 'Platform Admin',
         };
       });
 
@@ -722,6 +818,29 @@ export class BookRepository implements IBookRepository {
       });
 
       return responseData;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async createBookAuthor(name: string): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookAuthore = await client.bookAuthor.create({
+        data: {
+          name,
+          profilePicture: '',
+        },
+      });
+
+      return bookAuthore;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       throw new InternalServerError(

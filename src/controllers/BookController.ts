@@ -118,7 +118,41 @@ export default class BookController extends BaseController {
     try {
       const categoryId = BigInt(req.params.categoryId);
 
-      const book = await this._bookService.getBookByCategory(categoryId);
+      let book = await this._bookService.getBookByCategory(categoryId);
+
+      book = await book.map((data: any) => {
+        delete data.BookAuthor;
+        delete data.User;
+        return {
+          ...data,
+        };
+      });
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        {
+          length: book.length,
+        },
+        book,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async getBooks(req: express.Request, res: express.Response) {
+    try {
+      let book = await this._bookService.getBooks();
+
+      book = await book.map((data: any) => {
+        delete data.BookAuthor;
+        delete data.User;
+        return {
+          ...data,
+        };
+      });
 
       // Return response
       return this.sendJSONResponse(
@@ -218,6 +252,8 @@ export default class BookController extends BaseController {
     try {
       const bookId = BigInt(req.params.id);
       const status = req.query.status === 'true';
+
+      console.log('status', req.query.status, status);
 
       const book = await this._bookService.bookStatus(bookId, status);
 

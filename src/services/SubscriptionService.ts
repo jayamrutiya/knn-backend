@@ -81,12 +81,15 @@ export class SubscriptionService implements ISubscriptionService {
           );
           let book;
           if (findBookByName === undefined || findBookByName === null) {
+            const bookAuthor = await this._bookRepository.createBookAuthor(
+              userSubscription.authorName[i],
+            );
             book = await this._bookRepository.createBook({
               bookName: userSubscription.bookName[i],
               price: new Decimal(25.0),
               titleImage: userSubscription.titleImage[i],
               createdBy: userSubscription.userId,
-              authorId: null,
+              authorId: bookAuthor.id,
               isbn: null,
               description: null,
               pages: null,

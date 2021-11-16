@@ -21,6 +21,8 @@ export interface IBookService {
 
   getBookByCategory(categoryId: bigint): Promise<any>;
 
+  getBooks(): Promise<any>;
+
   getBookByNameAndAuthor(
     bookName: string,
     authorName: string,
