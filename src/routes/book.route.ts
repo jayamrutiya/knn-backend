@@ -19,6 +19,8 @@ router.get('/most/loved', (req, res) =>
   bookController.mostLovedBooks(req, res),
 );
 
+router.get('/author', (req, res) => bookController.getBookAuthors(req, res));
+
 router.get('/:id', (req, res) => bookController.getBookById(req, res));
 
 router.post('/', uploadBookTitleImage.single('titleImage'), (req, res) =>

@@ -79,4 +79,8 @@ export interface IBookRepository {
   mostLovedBooks(): Promise<any>;
 
   createBookAuthor(name: string): Promise<any>;
+
+  getBookByCreateBy(userId: bigint): Promise<any>;
+
+  getBookAuthors(): Promise<any>;
 }

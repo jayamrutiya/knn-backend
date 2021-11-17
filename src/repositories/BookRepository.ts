@@ -850,4 +850,47 @@ export class BookRepository implements IBookRepository {
       await this._databaseService.disconnect();
     }
   }
+
+  async getBookByCreateBy(userId: bigint): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const userBook = await client.userBook.findFirst({
+        where: {
+          userId,
+        },
+        include: {
+          Book: true,
+        },
+      });
+
+      return userBook;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async getBookAuthors(): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookAuthor = await client.bookAuthor.findMany({});
+
+      return bookAuthor;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
 }

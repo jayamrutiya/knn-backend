@@ -55,4 +55,6 @@ export interface IBookService {
   trendingThisWeek(): Promise<any>;
 
   mostLovedBooks(): Promise<any>;
+
+  getBookAuthors(): Promise<any>;
 }

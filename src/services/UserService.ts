@@ -186,6 +186,18 @@ export class UserService implements IUserService {
     const userRole = await this._roleRepository.getUserRole(userId);
     const getRoleId = await this._roleRepository.getRoleByName('Member');
 
+    const userBook = await this._bookRepository.getBookByCreateBy(userId);
+
+    if (userBook) {
+      for (let i = 0; i < userBook.Book.length; i++) {
+        if (userBook.Book[i].isActivated === false) {
+          throw new BadRequest(
+            'User Book not verify yet. First do verify book that upload by user.',
+          );
+        }
+      }
+    }
+
     await this._roleRepository.updateUserRoler(getRoleId.id, userRole.id);
     return this._userRepository.verifyUser(userId, isVerify);
   }

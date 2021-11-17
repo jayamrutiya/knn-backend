@@ -366,4 +366,18 @@ export default class BookController extends BaseController {
       return this.sendErrorResponse(req, res, error);
     }
   }
+
+  async getBookAuthors(req: express.Request, res: express.Response) {
+    try {
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        null,
+        await this._bookService.getBookAuthors(),
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }

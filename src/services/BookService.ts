@@ -60,62 +60,62 @@ export class BookService implements IBookService {
       throw new BadRequest('User not have permission to create book');
     }
 
-    if (userRole.Role === 'User') {
-      const userSubscription = await this._userRepository.getUserSubscription(
-        newBook.createdBy,
-      );
+    // if (userRole.Role === 'User') {
+    //   const userSubscription = await this._userRepository.getUserSubscription(
+    //     newBook.createdBy,
+    //   );
 
-      const userSubscriptionUsage = await this._userRepository.getUserSubscriptionUsage(
-        userSubscription.id,
-      );
+    //   const userSubscriptionUsage = await this._userRepository.getUserSubscriptionUsage(
+    //     userSubscription.id,
+    //   );
 
-      const subscription = await this._subscriptionRepository.getSubscription(
-        userSubscription.subscriptionId,
-      );
+    //   const subscription = await this._subscriptionRepository.getSubscription(
+    //     userSubscription.subscriptionId,
+    //   );
 
-      if (subscription.type === 'DEPOSITE') {
-        throw new BadRequest('User not have permission to create book');
-      }
+    //   if (subscription.type === 'DEPOSITE') {
+    //     throw new BadRequest('User not have permission to create book');
+    //   }
 
-      if (
-        userSubscription.noOfBook === userSubscriptionUsage.noOfBookUploaded
-      ) {
-        throw new BadRequest('User not have permission to create book');
-      }
+    //   if (
+    //     userSubscription.noOfBook === userSubscriptionUsage.noOfBookUploaded
+    //   ) {
+    //     throw new BadRequest('User not have permission to create book');
+    //   }
 
-      const findBookByName = await this._bookRepository.getBookByNameAndAuthor(
-        newBook.bookName,
-        authorName,
-      );
+    //   const findBookByName = await this._bookRepository.getBookByNameAndAuthor(
+    //     newBook.bookName,
+    //     authorName,
+    //   );
 
-      if (findBookByName === undefined || findBookByName === null) {
-        book = await this._bookRepository.createBook(newBook);
-      } else {
-        // update stock
-        await this._bookRepository.updateBookStock(findBookByName.id, true);
-        book = findBookByName;
-      }
+    //   if (findBookByName === undefined || findBookByName === null) {
+    //     book = await this._bookRepository.createBook(newBook);
+    //   } else {
+    //     // update stock
+    //     await this._bookRepository.updateBookStock(findBookByName.id, true);
+    //     book = findBookByName;
+    //   }
 
-      await this._userRepository.createUserBook(newBook.createdBy, book!.id);
+    //   await this._userRepository.createUserBook(newBook.createdBy, book!.id);
 
-      const totalBook = parseInt(userSubscriptionUsage.noOfBookUploaded) + 1;
+    //   const totalBook = parseInt(userSubscriptionUsage.noOfBookUploaded) + 1;
 
-      await this._userRepository.updateUserSubscriptionUsage(
-        userSubscriptionUsage.id,
-        totalBook,
-        userSubscriptionUsage.priceDeposited,
-      );
+    //   await this._userRepository.updateUserSubscriptionUsage(
+    //     userSubscriptionUsage.id,
+    //     totalBook,
+    //     userSubscriptionUsage.priceDeposited,
+    //   );
 
-      // if (userSubscription.noOfBook === totalBook) {
-      //   const getRoleId = await this._roleRepository.getRoleByName('Member');
+    //   // if (userSubscription.noOfBook === totalBook) {
+    //   //   const getRoleId = await this._roleRepository.getRoleByName('Member');
 
-      //   // const getUserRole = await this._roleRepository.getUserRole(
-      //   //   newBook.createdBy,
-      //   // );
+    //   //   // const getUserRole = await this._roleRepository.getUserRole(
+    //   //   //   newBook.createdBy,
+    //   //   // );
 
-      //   await this._roleRepository.updateUserRoler(getRoleId.id, userRole.id);
-      // }
-    }
+    //   //   await this._roleRepository.updateUserRoler(getRoleId.id, userRole.id);
+    //   // }
+    // }
 
     if (userRole.Role === 'Platform Admin') {
       let getBookAuthor = null;
@@ -269,5 +269,9 @@ export class BookService implements IBookService {
 
   async mostLovedBooks(): Promise<any> {
     return this._bookRepository.mostLovedBooks();
+  }
+
+  async getBookAuthors(): Promise<any> {
+    return this._bookRepository.getBookAuthors();
   }
 }
