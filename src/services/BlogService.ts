@@ -57,8 +57,19 @@ export class BlogService implements IBlogService {
   }
 
   async updateBlog(updateBlog: UpdateBlog): Promise<boolean> {
-    await this._blogRepository.getBlog(updateBlog.id);
+    const blog = await this._blogRepository.getBlog(updateBlog.id);
+    if (updateBlog.titleImage === 'no image') {
+      updateBlog.titleImage = blog.titleImage;
+    } else {
+      await fs.unlinkSync(
+        `${env.DIRECTORY}${blog.titleImage.split(/images/)[1]}`,
+      );
+    }
     return this._blogRepository.updateBlog(updateBlog);
+  }
+
+  async getBlogWriter(): Promise<any> {
+    return this._blogRepository.getBlogWriter();
   }
 
   async createBlogWrite(

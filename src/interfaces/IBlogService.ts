@@ -15,6 +15,8 @@ export interface IBlogService {
 
   updateBlog(updateBlog: UpdateBlog): Promise<boolean>;
 
+  getBlogWriter(): Promise<any>;
+
   createBlogWrite(
     newCreateBlogWriter: CreateBlogWriter,
   ): Promise<GetBlogWriter>;

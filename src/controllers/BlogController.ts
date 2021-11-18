@@ -116,6 +116,22 @@ export default class BlogController extends BaseController {
     }
   }
 
+  async getBlogWriter(req: express.Request, res: express.Response) {
+    try {
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        {
+          length: 1,
+        },
+        await this._blogService.getBlogWriter(),
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
   async createBlogWriter(req: express.Request, res: express.Response) {
     try {
       const {

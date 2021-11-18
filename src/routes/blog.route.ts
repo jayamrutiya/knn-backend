@@ -13,17 +13,19 @@ const loggerService = Container.get<ILoggerService>(TYPES.LoggerService);
 const blogService = Container.get<IBlogService>(TYPES.BlogService);
 const blogController = new BlogController(loggerService, blogService);
 
+router.get('/writer', (req, res) => blogController.getBlogWriter(req, res));
+
 router.post('/', uploadBookTitleImage.single('titleImage'), (req, res) =>
   blogController.createBlog(req, res),
+);
+
+router.put('/:id', uploadBookTitleImage.single('titleImage'), (req, res) =>
+  blogController.updateBlog(req, res),
 );
 
 router.get('/:id', (req, res) => blogController.getBlog(req, res));
 
 router.get('/', (req, res) => blogController.getAllBlog(req, res));
-
-router.put('/:id', uploadBookTitleImage.single('titleImage'), (req, res) =>
-  blogController.updateBlog(req, res),
-);
 
 router.post(
   '/writer',
