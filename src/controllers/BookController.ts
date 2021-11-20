@@ -195,7 +195,7 @@ export default class BookController extends BaseController {
 
   async editBook(req: express.Request, res: express.Response) {
     try {
-      console.log('ENV ', ENV.API_ROOT);
+      console.log('ENV ', req.body);
 
       // get parameters
       const {
@@ -375,6 +375,23 @@ export default class BookController extends BaseController {
         null,
         null,
         await this._bookService.getBookAuthors(),
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async deleteBookCategory(req: express.Request, res: express.Response) {
+    try {
+      const id = BigInt(req.params.id);
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        (await this._bookService.deleteBookCategory(id))
+          ? 'Deleted Successfully'
+          : 'Error',
+        null,
+        null,
       );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);

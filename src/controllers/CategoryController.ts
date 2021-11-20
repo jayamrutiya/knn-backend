@@ -24,7 +24,9 @@ export default class CategoryController extends BaseController {
   async getCategories(req: express.Request, res: express.Response) {
     try {
       const categoryType =
-        req.query.categoryType?.toString() === 'BOOK'
+        req.query.categoryType?.toString() === 'all'
+          ? 'all'
+          : req.query.categoryType?.toString() === 'BOOK'
           ? CategoryType['BOOK']
           : CategoryType['DISCUSSION'];
 
@@ -38,6 +40,45 @@ export default class CategoryController extends BaseController {
           length: category.length,
         },
         category,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async createCategory(req: express.Request, res: express.Response) {
+    try {
+      const { name, type, createdBy } = req.body;
+
+      const category = await this._categoryService.createCategory(
+        name,
+        type === 'BOOK' ? CategoryType['BOOK'] : CategoryType['DISCUSSION'],
+        BigInt(createdBy),
+      );
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        'Category created successfully',
+        null,
+        category,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async deleteCategory(req: express.Request, res: express.Response) {
+    try {
+      const id = BigInt(req.params.id);
+      const category = await this._categoryService.deleteCategory(id);
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        category ? 'Category delete successfully' : 'Something went wrong',
+        null,
+        null,
       );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);

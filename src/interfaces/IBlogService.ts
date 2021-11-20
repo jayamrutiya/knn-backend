@@ -22,4 +22,6 @@ export interface IBlogService {
   ): Promise<GetBlogWriter>;
 
   deleteBlog(blogId: bigint): Promise<boolean>;
+
+  deleteBlogWriter(id: bigint): Promise<boolean>;
 }

@@ -53,4 +53,8 @@ router.post('/review', (req, res) => bookController.addBookReview(req, res));
 
 router.post('/rating', (req, res) => bookController.createBookRating(req, res));
 
+router.delete('/category/:id', (req, res) =>
+  bookController.deleteBookCategory(req, res),
+);
+
 export default router;

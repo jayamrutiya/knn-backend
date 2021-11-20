@@ -19,18 +19,12 @@ const subscriptionController = new SubscriptionController(
   subscriptionService,
 );
 
-router.get(
-  '/:id',
-  passport.authenticate('jwt', { session: false }),
-  (req: express.Request, res: express.Response) =>
-    subscriptionController.getSubscription(req, res),
+router.get('/:id', (req: express.Request, res: express.Response) =>
+  subscriptionController.getSubscription(req, res),
 );
 
-router.get(
-  '/',
-  passport.authenticate('jwt', { session: false }),
-  (req: express.Request, res: express.Response) =>
-    subscriptionController.getAllSubscription(req, res),
+router.get('/', (req: express.Request, res: express.Response) =>
+  subscriptionController.getAllSubscription(req, res),
 );
 
 router.post(

@@ -151,15 +151,17 @@ export class EventService implements IEventService {
       throw new NotFound('User Not Found');
     }
 
-    if (isPaymentDone) {
-      app.emit(EventTypes.SEND_EVENT_REGISTRATION, {
-        eventName: getEvent.title,
-        eventStartAt: getEvent.startAt,
-        eventEndAt: getEvent.endAt,
-        eventVenue: getEvent.venue,
-        emailId: getUser.emailId,
-      });
-    }
+    const passOrFail = isPaymentDone ? 'Accepted' : 'Cancled';
+
+    // if (isPaymentDone) {
+    app.emit(EventTypes.SEND_EVENT_REGISTRATION, {
+      eventName: `${getEvent.title}. Your registration is ${passOrFail}`,
+      eventStartAt: getEvent.startAt,
+      eventEndAt: getEvent.endAt,
+      eventVenue: getEvent.venue,
+      emailId: getUser.emailId,
+    });
+    // }
 
     return paymentDone;
   }

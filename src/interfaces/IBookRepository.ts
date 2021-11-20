@@ -83,4 +83,6 @@ export interface IBookRepository {
   getBookByCreateBy(userId: bigint): Promise<any>;
 
   getBookAuthors(): Promise<any>;
+
+  deleteBookCategory(id: bigint): Promise<boolean>;
 }

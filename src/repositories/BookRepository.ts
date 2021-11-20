@@ -43,6 +43,12 @@ export class BookRepository implements IBookRepository {
           id: bookId,
         },
         include: {
+          BookCategory: {
+            select: {
+              id: true,
+              Category: true,
+            },
+          },
           BookAuthor: true,
           BookReview: true,
           BookLikeDislike: {
@@ -884,6 +890,28 @@ export class BookRepository implements IBookRepository {
       const bookAuthor = await client.bookAuthor.findMany({});
 
       return bookAuthor;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async deleteBookCategory(id: bigint): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookCat = await client.bookCategory.delete({
+        where: {
+          id,
+        },
+      });
+
+      return bookCat !== null;
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       throw new InternalServerError(

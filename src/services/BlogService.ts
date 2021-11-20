@@ -15,6 +15,7 @@ import {
   UpdateBlog,
 } from '../types/Blog';
 import fs from 'fs';
+import { BadRequest } from '../errors/BadRequest';
 
 @injectable()
 export class BlogService implements IBlogService {
@@ -84,5 +85,14 @@ export class BlogService implements IBlogService {
       `${env.DIRECTORY}${blog.titleImage.split(/images/)[1]}`,
     );
     return this._blogRepository.deleteBlog(blogId);
+  }
+
+  async deleteBlogWriter(id: bigint): Promise<boolean> {
+    const blogs = await this._blogRepository.getBlogByBlogWriter(id);
+
+    if (blogs.length > 0) {
+      throw new BadRequest('Some Blogs written by this writer');
+    }
+    return this._blogRepository.deleteBlogWriter(id);
   }
 }

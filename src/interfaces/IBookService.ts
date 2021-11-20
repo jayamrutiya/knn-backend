@@ -57,4 +57,6 @@ export interface IBookService {
   mostLovedBooks(): Promise<any>;
 
   getBookAuthors(): Promise<any>;
+
+  deleteBookCategory(id: bigint): Promise<boolean>;
 }

@@ -231,4 +231,54 @@ export class BlogRepository implements IBlogRepository {
       await this._databaseService.disconnect();
     }
   }
+
+  async deleteBlogWriter(id: bigint): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const blogWriter = await client.blogWriter.delete({
+        where: {
+          id,
+        },
+      });
+
+      return blogWriter !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  async getBlogByBlogWriter(blogWriterId: bigint): Promise<any> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const blogs = await client.blog.findMany({
+        where: {
+          blogWriter: blogWriterId,
+        },
+      });
+
+      return blogs;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof NotFound) {
+        throw error;
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
 }

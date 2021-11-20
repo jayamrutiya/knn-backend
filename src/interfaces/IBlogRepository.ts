@@ -22,4 +22,8 @@ export interface IBlogRepository {
   ): Promise<GetBlogWriter>;
 
   deleteBlog(blogId: bigint): Promise<boolean>;
+
+  deleteBlogWriter(id: bigint): Promise<boolean>;
+
+  getBlogByBlogWriter(blogWriterId: bigint): Promise<any>;
 }

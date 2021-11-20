@@ -22,7 +22,21 @@ export class CategoryService implements ICategoryService {
     this._loggerService.getLogger().info(`Creating: ${this.constructor.name}`);
   }
 
-  async getCategories(categoryType: CategoryType): Promise<GetCategory[]> {
+  async getCategories(
+    categoryType: CategoryType | 'all',
+  ): Promise<GetCategory[]> {
     return this._categoryRepository.getCategories(categoryType);
+  }
+
+  async createCategory(
+    name: string,
+    type: CategoryType,
+    createdBy: bigint,
+  ): Promise<any> {
+    return this._categoryRepository.createCategory(name, type, createdBy);
+  }
+
+  async deleteCategory(id: bigint): Promise<any> {
+    return this._categoryRepository.deleteCategory(id);
   }
 }

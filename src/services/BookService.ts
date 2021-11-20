@@ -15,6 +15,8 @@ import { IRoleRepository } from '../interfaces/IRoleRepository';
 import { IUserRepository } from '../interfaces/IUserRepository';
 import { ISubscriptionRepository } from '../interfaces/ISubscriptionRepository';
 import { NotFound } from '../errors/NotFound';
+import fs from 'fs';
+import env from '../config/env';
 
 @injectable()
 export class BookService implements IBookService {
@@ -172,6 +174,14 @@ export class BookService implements IBookService {
   }
 
   async editBook(updateBook: editBook): Promise<boolean> {
+    const book = await this._bookRepository.getBookById(updateBook.id);
+    if (book.titleImage === 'no image') {
+      book.titleImage = updateBook.titleImage;
+    } else {
+      await fs.unlinkSync(
+        `${env.DIRECTORY}${book.titleImage.split(/images/)[1]}`,
+      );
+    }
     return this._bookRepository.editBook(updateBook);
   }
 
@@ -273,5 +283,9 @@ export class BookService implements IBookService {
 
   async getBookAuthors(): Promise<any> {
     return this._bookRepository.getBookAuthors();
+  }
+
+  async deleteBookCategory(id: bigint): Promise<boolean> {
+    return this._bookRepository.deleteBookCategory(id);
   }
 }
