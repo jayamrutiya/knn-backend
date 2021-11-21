@@ -97,7 +97,7 @@ export class SubscriptionService implements ISubscriptionService {
             });
           } else {
             // update stock
-            await this._bookRepository.updateBookStock(findBookByName.id, true);
+            // await this._bookRepository.updateBookStock(findBookByName.id, true);
             book = findBookByName;
           }
 

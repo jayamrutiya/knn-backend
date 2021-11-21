@@ -132,18 +132,18 @@ export class BookService implements IBookService {
       if (getBookAuthor === null) {
         throw new NotFound('Author not found.');
       }
-      const findBookByName = await this._bookRepository.getBookByNameAndAuthor(
-        newBook.bookName,
-        getBookAuthor.name,
-      );
+      // const findBookByName = await this._bookRepository.getBookByNameAndAuthor(
+      //   newBook.bookName,
+      //   getBookAuthor.name,
+      // );
 
-      if (findBookByName === undefined || findBookByName === null) {
-        book = await this._bookRepository.createBook(newBook);
-      } else {
-        // update stock
-        await this._bookRepository.updateBookStock(findBookByName.id, true);
-        book = findBookByName;
-      }
+      // if (findBookByName === undefined || findBookByName === null) {
+      book = await this._bookRepository.createBook(newBook);
+      // } else {
+      // update stock
+      //   await this._bookRepository.updateBookStock(findBookByName.id, true);
+      //   book = findBookByName;
+      // }
 
       await this._userRepository.createUserBook(newBook.createdBy, book!.id);
     }
@@ -175,8 +175,8 @@ export class BookService implements IBookService {
 
   async editBook(updateBook: editBook): Promise<boolean> {
     const book = await this._bookRepository.getBookById(updateBook.id);
-    if (book.titleImage === 'no image') {
-      book.titleImage = updateBook.titleImage;
+    if (updateBook.titleImage === 'no image') {
+      updateBook.titleImage = book.titleImage;
     } else {
       await fs.unlinkSync(
         `${env.DIRECTORY}${book.titleImage.split(/images/)[1]}`,

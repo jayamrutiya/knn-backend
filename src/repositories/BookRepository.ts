@@ -427,6 +427,18 @@ export class BookRepository implements IBookRepository {
       // Get the database client
       const client = this._databaseService.Client();
 
+      const userBook = await client.userBook.deleteMany({
+        where: {
+          bookId,
+        },
+      });
+
+      const bookCategory = await client.bookCategory.deleteMany({
+        where: {
+          bookId,
+        },
+      });
+
       const book = await client.book.delete({
         where: {
           id: bookId,
@@ -862,12 +874,16 @@ export class BookRepository implements IBookRepository {
       // Get the database client
       const client = this._databaseService.Client();
 
-      const userBook = await client.userBook.findFirst({
+      const userBook = await client.userBook.findMany({
         where: {
           userId,
         },
         include: {
-          Book: true,
+          Book: {
+            include: {
+              BookAuthor: true,
+            },
+          },
         },
       });
 

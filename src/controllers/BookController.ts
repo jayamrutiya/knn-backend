@@ -195,8 +195,6 @@ export default class BookController extends BaseController {
 
   async editBook(req: express.Request, res: express.Response) {
     try {
-      console.log('ENV ', req.body);
-
       // get parameters
       const {
         bookName,
@@ -225,6 +223,8 @@ export default class BookController extends BaseController {
         verifyBy: BigInt(verifyBy),
         isActivated: isActivated == 'true' ? true : false,
       };
+
+      console.log('updateBook ', updateBook);
 
       const book = await this._bookService.editBook(updateBook);
 

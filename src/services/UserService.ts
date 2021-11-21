@@ -14,7 +14,7 @@ import {
 } from '../types/User';
 import crypto from 'crypto';
 import { IRoleRepository } from '../interfaces/IRoleRepository';
-import { User } from '@prisma/client';
+import { User, OrderStatus } from '@prisma/client';
 import { NotFound } from '../errors/NotFound';
 import { IBookRepository } from '../interfaces/IBookRepository';
 import { BadRequest } from '../errors/BadRequest';
@@ -143,9 +143,19 @@ export class UserService implements IUserService {
       userId,
     );
 
+    if (
+      lastOrder !== null &&
+      (lastOrder.status === OrderStatus['PENDING'] ||
+        lastOrder.status === OrderStatus['ONTHEWAY'])
+    ) {
+      throw new BadRequest(
+        `Your last order status is ${lastOrder.status}. So you can't place new order.`,
+      );
+    }
+
     const order = await this._userRepository.createOrder(newOrderPayload);
 
-    if (lastOrder !== null) {
+    if (lastOrder !== null && lastOrder.status === OrderStatus['DELIVERED']) {
       lastOrderId = lastOrder.id;
     } else {
       lastOrderId = order.id;
@@ -157,7 +167,7 @@ export class UserService implements IUserService {
       order.id,
     );
 
-    await this._userRepository.createUserCurrentBook(order.id, userId);
+    // await this._userRepository.createUserCurrentBook(order.id, userId);
 
     const newOrderDetailPayload: NewOrderDetail = cart.map((cartItem) => {
       return {
@@ -183,22 +193,50 @@ export class UserService implements IUserService {
   }
 
   async verifyUser(userId: bigint, isVerify: boolean): Promise<boolean> {
-    const userRole = await this._roleRepository.getUserRole(userId);
-    const getRoleId = await this._roleRepository.getRoleByName('Member');
+    const user = await this._userRepository.getUser(userId);
+    if (user.isSubscriptionComplete === false) {
+      throw new BadRequest('User Not complete subscription process');
+    }
+    if (isVerify) {
+      const userRole = await this._roleRepository.getUserRole(userId);
+      const getRoleId = await this._roleRepository.getRoleByName('Member');
 
-    const userBook = await this._bookRepository.getBookByCreateBy(userId);
+      const userBook = await this._bookRepository.getBookByCreateBy(userId);
 
-    if (userBook) {
-      for (let i = 0; i < userBook.Book.length; i++) {
-        if (userBook.Book[i].isActivated === false) {
-          throw new BadRequest(
-            'User Book not verify yet. First do verify book that upload by user.',
-          );
+      console.log('userBook', userBook);
+
+      if (userBook) {
+        for (let i = 0; i < userBook.length; i++) {
+          if (userBook[i].Book.isActivated === false) {
+            throw new BadRequest(
+              'User Book not verify yet. First do verify book that upload by user.',
+            );
+          }
         }
       }
-    }
 
-    await this._roleRepository.updateUserRoler(getRoleId.id, userRole.id);
+      await this._roleRepository.updateUserRoler(getRoleId.id, userRole.id);
+
+      // TODO: Send confirmation email
+    } else {
+      await this._userRepository.changeSubscriptionStatus(userId, false);
+
+      if (user.UserSubscription[0].type === 'BOOK') {
+        const userBook = await this._bookRepository.getBookByCreateBy(userId);
+
+        if (userBook) {
+          for (let i = 0; i < userBook.length; i++) {
+            await this._bookRepository.deleteBook(userBook[i].Book.id);
+          }
+        }
+      }
+
+      await this._userRepository.deleteUserSubscription(
+        user.UserSubscription[0].id,
+      );
+
+      // TODO: Send cancletion email
+    }
     return this._userRepository.verifyUser(userId, isVerify);
   }
 
@@ -254,5 +292,88 @@ export class UserService implements IUserService {
     }
 
     return this._userRepository.updateUser(updateUser);
+  }
+
+  async newusers(isVerify: boolean): Promise<any> {
+    return this._userRepository.newusers(isVerify);
+  }
+
+  async getOrder(status: OrderStatus): Promise<boolean> {
+    return this._userRepository.getOrder(status);
+  }
+
+  async orderStatusChange(id: bigint, status: OrderStatus): Promise<boolean> {
+    console.log('status', status);
+
+    let order = await this._userRepository.getOrderById(id);
+
+    if (order === null) {
+      throw new BadRequest('Order not found');
+    }
+
+    if (
+      order.User.UserBookExchangeLogs[0].previousOrderId ===
+      order.User.UserBookExchangeLogs[0].latestOrderId
+    ) {
+      const getUserBook = await this._bookRepository.getBookByCreateBy(
+        order.userId,
+      );
+
+      order.GetBackFromUser = await getUserBook.map((data: any) => data.Book);
+      delete order.User.UserBookExchangeLogs;
+    } else {
+      order.GetBackFromUser = await order.User.UserBookExchangeLogs[0]
+        .PreviousOrder.OrderDetail;
+      delete order.User.UserBookExchangeLogs;
+    }
+
+    if (status === OrderStatus['DELIVERED']) {
+      // TODO : send email
+      // TODO : change the stock of book that get back from user
+      for (let i = 0; i < order.GetBackFromUser.length; i++) {
+        await this._bookRepository.updateBookStock(
+          order.GetBackFromUser[i].id,
+          true,
+        );
+      }
+    }
+    if (status === OrderStatus['CANCLE']) {
+      // TODO : send email
+      // TODO : change the stock of book that user ordered
+      for (let i = 0; i < order.OrderDetail.length; i++) {
+        await this._bookRepository.updateBookStock(
+          order.OrderDetail[i].Book.id,
+          true,
+        );
+      }
+    }
+    if (status === OrderStatus['ONTHEWAY']) {
+      // TODO : send email
+    }
+    return this._userRepository.orderStatusChange(id, status);
+  }
+
+  async getOrderById(id: bigint): Promise<any> {
+    let order = await this._userRepository.getOrderById(id);
+
+    console.log('order', order);
+
+    if (
+      order.User.UserBookExchangeLogs[0].previousOrderId ===
+      order.User.UserBookExchangeLogs[0].latestOrderId
+    ) {
+      const getUserBook = await this._bookRepository.getBookByCreateBy(
+        order.userId,
+      );
+
+      order.GetBackFromUser = await getUserBook.map((data: any) => data.Book);
+      delete order.User.UserBookExchangeLogs;
+    } else {
+      order.GetBackFromUser = await order.User.UserBookExchangeLogs[0]
+        .PreviousOrder.OrderDetail;
+      delete order.User.UserBookExchangeLogs;
+    }
+
+    return order;
   }
 }

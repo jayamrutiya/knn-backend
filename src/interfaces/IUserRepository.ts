@@ -1,4 +1,4 @@
-import { ForgotPassword, User } from '@prisma/client';
+import { ForgotPassword, User, OrderStatus } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime';
 import { RefreshToken } from '../types/Authentication';
 import {
@@ -88,4 +88,16 @@ export interface IUserRepository {
   getUserWithCount(userId: bigint): Promise<any>;
 
   updateUser(updateUser: UpdateUser): Promise<any>;
+
+  newusers(isVerify: boolean): Promise<any>;
+
+  changeSubscriptionStatus(userId: bigint, status: boolean): Promise<boolean>;
+
+  deleteUserSubscription(id: bigint): Promise<boolean>;
+
+  getOrder(status: OrderStatus): Promise<boolean>;
+
+  getOrderById(id: bigint): Promise<any>;
+
+  orderStatusChange(id: bigint, status: OrderStatus): Promise<boolean>;
 }

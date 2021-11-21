@@ -6,6 +6,8 @@ import { IUserService } from '../interfaces/IUserService';
 import { CreateUser, UpdateUser } from '../types/User';
 import { Decimal } from '@prisma/client/runtime';
 import ENV from '../config/env';
+import { OrderStatus } from '.prisma/client';
+import { BadRequest } from '../errors/BadRequest';
 
 @injectable()
 export default class UserController extends BaseController {
@@ -296,6 +298,92 @@ export default class UserController extends BaseController {
 
       // Return response
       return this.sendJSONResponse(res, null, null, user);
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async newUser(req: express.Request, res: express.Response) {
+    try {
+      const isVerify = req.query.isVerify === 'true';
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        null,
+        await this._userService.newusers(isVerify),
+      );
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async getOrder(req: express.Request, res: express.Response) {
+    try {
+      let status;
+      if (req.query.status === 'PENDING') {
+        status = OrderStatus['PENDING'];
+      } else if (req.query.status === 'DELIVERED') {
+        status = OrderStatus['DELIVERED'];
+      } else if (req.query.status === 'ONTHEWAY') {
+        status = OrderStatus['ONTHEWAY'];
+      } else if (req.query.status === 'CANCLE') {
+        status = OrderStatus['CANCLE'];
+      } else {
+        throw new BadRequest('This is not valid status');
+      }
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        null,
+        null,
+        await this._userService.getOrder(status),
+      );
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async orderStatusChange(req: express.Request, res: express.Response) {
+    try {
+      let status;
+      if (req.query.status === 'PENDING') {
+        status = OrderStatus['PENDING'];
+      } else if (req.query.status === 'DELIVERED') {
+        status = OrderStatus['DELIVERED'];
+      } else if (req.query.status === 'ONTHEWAY') {
+        status = OrderStatus['ONTHEWAY'];
+      } else if (req.query.status === 'CANCLE') {
+        status = OrderStatus['CANCLE'];
+      } else {
+        throw new BadRequest('This is not valid status');
+      }
+      const id = BigInt(req.params.orderId);
+
+      const order = await this._userService.orderStatusChange(id, status);
+      // Return response
+      return this.sendJSONResponse(res, 'Order Status chanaged.', null, null);
+    } catch (error) {
+      console.log(error);
+
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async getOrderById(req: express.Request, res: express.Response) {
+    try {
+      const id = BigInt(req.params.id);
+
+      const order = await this._userService.getOrderById(id);
+
+      // Return response
+      return this.sendJSONResponse(res, null, null, order);
     } catch (error) {
       console.log(error);
 

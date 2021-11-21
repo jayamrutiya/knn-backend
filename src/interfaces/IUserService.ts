@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User, OrderStatus } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime';
 import {
   AddToCart,
@@ -42,4 +42,12 @@ export interface IUserService {
   getUserWithCount(userId: bigint): Promise<any>;
 
   updateUser(updateUser: UpdateUser): Promise<any>;
+
+  newusers(isVerify: boolean): Promise<any>;
+
+  getOrder(status: OrderStatus): Promise<boolean>;
+
+  orderStatusChange(id: bigint, status: OrderStatus): Promise<boolean>;
+
+  getOrderById(id: bigint): Promise<any>;
 }

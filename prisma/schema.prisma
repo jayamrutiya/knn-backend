@@ -287,7 +287,7 @@ model Order {
     OrderDetail          OrderDetail[]
     UserCurrentBook      UserCurrentBook[]
     UserBookExchangeLogs UserBookExchangeLogs[]
-    asd                  UserBookExchangeLogs[] @relation("asd")
+    previousOrder        UserBookExchangeLogs[] @relation("previousOrder")
 }
 
 enum OrderStatus {
@@ -325,8 +325,8 @@ model UserBookExchangeLogs {
     User            User     @relation(references: [id], fields: [userId])
     previousOrderId BigInt
     latestOrderId   BigInt
-    Order           Order    @relation("asd", references: [id], fields: [previousOrderId])
-    OrderA          Order    @relation(references: [id], fields: [latestOrderId])
+    PreviousOrder   Order    @relation("previousOrder", references: [id], fields: [previousOrderId])
+    LatestOrder     Order    @relation(references: [id], fields: [latestOrderId])
     createdAt       DateTime @default(now()) @db.Timestamp(6)
 }
 

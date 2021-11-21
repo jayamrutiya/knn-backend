@@ -46,7 +46,7 @@ router.post('/verify', (req: express.Request, res: express.Response) =>
   userController.verifyUser(req, res),
 );
 
-router.post('/info/:userId', (req: express.Request, res: express.Response) =>
+router.get('/info/:userId', (req: express.Request, res: express.Response) =>
   userController.getUser(req, res),
 );
 
@@ -59,6 +59,24 @@ router.put(
   uploadProfilePicture.single('profilePicture'),
   (req: express.Request, res: express.Response) =>
     userController.updateUser(req, res),
+);
+
+router.get('/new', (req: express.Request, res: express.Response) =>
+  userController.newUser(req, res),
+);
+
+router.get('/orders', (req: express.Request, res: express.Response) =>
+  userController.getOrder(req, res),
+);
+
+router.put('/orders/:orderId', (req: express.Request, res: express.Response) =>
+  userController.orderStatusChange(req, res),
+);
+
+router.get(
+  '/order/details/:id',
+  (req: express.Request, res: express.Response) =>
+    userController.getOrderById(req, res),
 );
 
 export default router;
