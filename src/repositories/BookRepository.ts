@@ -759,6 +759,7 @@ export class BookRepository implements IBookRepository {
               bookName: true,
               price: true,
               titleImage: true,
+              avgRating: true,
               BookCategory: {
                 select: {
                   Category: {
