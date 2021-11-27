@@ -126,7 +126,7 @@ model Book {
     description     String?           @db.Text
     price           Decimal           @db.Decimal(10, 2)
     titleImage      String            @db.Text
-    stock           BigInt            @default(1)
+    stock           BigInt            @default(0)
     avgRating       Float?            @db.Float
     createdBy       BigInt
     verifyBy        BigInt?
