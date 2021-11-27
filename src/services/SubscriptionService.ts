@@ -16,6 +16,8 @@ import {
   CreateUserSubscriptionUsage,
   GetSubscription,
 } from '../types/Subscription';
+import app from '../config/express';
+import { EventTypes } from '../config/events';
 
 @injectable()
 export class SubscriptionService implements ISubscriptionService {
@@ -159,6 +161,13 @@ export class SubscriptionService implements ISubscriptionService {
       );
 
       await this._userRepository.storeRefreshToken(user.id, refreshToken);
+
+      // send email
+      app.emit(EventTypes.SEND_COMMON_EMAIL, {
+        subject: 'Knn - Buy Subscription',
+        body: `<p>You Subscription process is complete please wait for admin confirmation.</p>`,
+        emailId: user.emailId,
+      });
 
       // Return token
       return { accessToken, refreshToken };

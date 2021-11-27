@@ -19,6 +19,8 @@ import { NotFound } from '../errors/NotFound';
 import { IBookRepository } from '../interfaces/IBookRepository';
 import { BadRequest } from '../errors/BadRequest';
 import { Decimal } from '@prisma/client/runtime';
+import { EventTypes } from '../config/events';
+import app from '../config/express';
 
 @injectable()
 export class UserService implements IUserService {
@@ -189,6 +191,13 @@ export class UserService implements IUserService {
         await this._bookRepository.updateBookStock(item.bookId, false),
     );
 
+    // send email
+    app.emit(EventTypes.SEND_COMMON_EMAIL, {
+      subject: 'Knn - Buy Subscription',
+      body: `<p>You order created successfully. Order Id: ${order.id}</p>`,
+      emailId: emailId,
+    });
+
     return order;
   }
 
@@ -217,7 +226,12 @@ export class UserService implements IUserService {
 
       await this._roleRepository.updateUserRoler(getRoleId.id, userRole.id);
 
-      // TODO: Send confirmation email
+      // send email
+      app.emit(EventTypes.SEND_COMMON_EMAIL, {
+        subject: 'Knn - Verification',
+        body: `<p>You Subscription is verify successfully.</p>`,
+        emailId: user.emailId,
+      });
     } else {
       await this._userRepository.changeSubscriptionStatus(userId, false);
 
@@ -235,7 +249,12 @@ export class UserService implements IUserService {
         user.UserSubscription[0].id,
       );
 
-      // TODO: Send cancletion email
+      // send email
+      app.emit(EventTypes.SEND_COMMON_EMAIL, {
+        subject: 'Knn - Verification',
+        body: `<p>You Subscription is not verify. Please contatct admin.</p>`,
+        emailId: user.emailId,
+      });
     }
     return this._userRepository.verifyUser(userId, isVerify);
   }
@@ -328,8 +347,13 @@ export class UserService implements IUserService {
     }
 
     if (status === OrderStatus['DELIVERED']) {
-      // TODO : send email
-      // TODO : change the stock of book that get back from user
+      // send email
+      app.emit(EventTypes.SEND_COMMON_EMAIL, {
+        subject: 'Knn - Order',
+        body: `<p>You order is deliverd. Order Id: ${order.id}</p>`,
+        emailId: order.emailId,
+      });
+
       for (let i = 0; i < order.GetBackFromUser.length; i++) {
         await this._bookRepository.updateBookStock(
           order.GetBackFromUser[i].id,
@@ -338,8 +362,13 @@ export class UserService implements IUserService {
       }
     }
     if (status === OrderStatus['CANCLE']) {
-      // TODO : send email
-      // TODO : change the stock of book that user ordered
+      // send email
+      app.emit(EventTypes.SEND_COMMON_EMAIL, {
+        subject: 'Knn - Order',
+        body: `<p>You order is cancle. Please contact to Admin. Order Id: ${order.id}</p>`,
+        emailId: order.emailId,
+      });
+
       for (let i = 0; i < order.OrderDetail.length; i++) {
         await this._bookRepository.updateBookStock(
           order.OrderDetail[i].Book.id,
@@ -348,7 +377,12 @@ export class UserService implements IUserService {
       }
     }
     if (status === OrderStatus['ONTHEWAY']) {
-      // TODO : send email
+      // send email
+      app.emit(EventTypes.SEND_COMMON_EMAIL, {
+        subject: 'Knn - Order',
+        body: `<p>You order is dispatch. Order Id: ${order.id}</p>`,
+        emailId: order.emailId,
+      });
     }
     return this._userRepository.orderStatusChange(id, status);
   }

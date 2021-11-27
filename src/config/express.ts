@@ -55,6 +55,7 @@ app.on(
   EventTypes.SEND_EVENT_REGISTRATION,
   subscribers.sendEventRegistrationEmail,
 );
+app.on(EventTypes.SEND_COMMON_EMAIL, subscribers.sendCommonEmail);
 
 // Export the configured app
 export default app;

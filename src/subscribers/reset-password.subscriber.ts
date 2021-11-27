@@ -29,7 +29,7 @@ export async function sendResetPasswordEmail(args: any) {
       args.emailId,
       subject,
       body,
-      'donotreply@thelink.com',
+      'donotreply@knn.com',
     );
 
     await client.email.create({

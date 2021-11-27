@@ -9,18 +9,18 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import { IDatabaseService } from '../interfaces/IDatabaseService';
 
 // Handle send password reset email event
-export async function sendEventRegistrationEmail(args: any) {
+export async function sendCommonEmail(args: any) {
   const loggerService = Container.get<ILoggerService>(TYPES.LoggerService);
   const databaseService = Container.get<IDatabaseService>(
     TYPES.DatabaseService,
   );
 
-  loggerService.getLogger().info('Sending event registration email');
+  loggerService.getLogger().info(`Sending ${args.subject} email`);
 
   // Get the database client
   const client = databaseService.Client();
-  const body = `<p>You successfully register for <b>${args.eventName}</b>.</p><br><b>Start At:</b><p>${args.eventStartAt}</p><br><b>End At:</b><p>${args.eventEndAt}</p><br><b>Venue:</b><p>${args.eventVenue}</p>`;
-  const subject = 'Knn - Event Registration';
+  const body = `${args.body}`;
+  const subject = `${args.subject}`;
   console.log(body);
 
   try {
@@ -45,9 +45,7 @@ export async function sendEventRegistrationEmail(args: any) {
 
     await client.$disconnect();
 
-    loggerService
-      .getLogger()
-      .info('Event registration email sent successfully.');
+    loggerService.getLogger().info(`${args.subject} email sent successfully.`);
   } catch (error) {
     console.log('Error: ', error);
 
@@ -64,8 +62,6 @@ export async function sendEventRegistrationEmail(args: any) {
 
     await client.$disconnect();
 
-    loggerService
-      .getLogger()
-      .error(`Sending Event registration email failed. ${error}`);
+    loggerService.getLogger().error(`${args.subject} email failed. ${error}`);
   }
 }
