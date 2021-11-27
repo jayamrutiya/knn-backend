@@ -17,6 +17,7 @@ import { ISubscriptionRepository } from '../interfaces/ISubscriptionRepository';
 import { NotFound } from '../errors/NotFound';
 import fs from 'fs';
 import env from '../config/env';
+import { profile } from 'console';
 
 @injectable()
 export class BookService implements IBookService {
@@ -287,5 +288,22 @@ export class BookService implements IBookService {
 
   async deleteBookCategory(id: bigint): Promise<boolean> {
     return this._bookRepository.deleteBookCategory(id);
+  }
+
+  async createBookAuthor(name: string, profile: string): Promise<any> {
+    return this._bookRepository.createBookAuthor(name, profile);
+  }
+
+  async deleteBookAuthor(id: bigint): Promise<boolean> {
+    const author = await this._bookRepository.getBookAuthorById(id);
+    if (author === null) {
+      throw new NotFound('Author not found');
+    }
+    if (author.profilePicture !== '' && author.profilePicture !== null) {
+      await fs.unlinkSync(
+        `${env.DIRECTORY}${author.profilePicture.split(/images/)[1]}`,
+      );
+    }
+    return this._bookRepository.deleteBookAuthor(id);
   }
 }

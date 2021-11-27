@@ -78,11 +78,15 @@ export interface IBookRepository {
 
   mostLovedBooks(): Promise<any>;
 
-  createBookAuthor(name: string): Promise<any>;
+  createBookAuthor(name: string, profile: string): Promise<any>;
 
   getBookByCreateBy(userId: bigint): Promise<any>;
 
   getBookAuthors(): Promise<any>;
 
   deleteBookCategory(id: bigint): Promise<boolean>;
+
+  deleteBookAuthor(id: bigint): Promise<boolean>;
+
+  // getBookAuthor(id: bigint): Promise<any>;
 }

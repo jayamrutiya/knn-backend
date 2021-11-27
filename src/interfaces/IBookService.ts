@@ -59,4 +59,8 @@ export interface IBookService {
   getBookAuthors(): Promise<any>;
 
   deleteBookCategory(id: bigint): Promise<boolean>;
+
+  createBookAuthor(name: string, profile: string): Promise<any>;
+
+  deleteBookAuthor(id: bigint): Promise<boolean>;
 }

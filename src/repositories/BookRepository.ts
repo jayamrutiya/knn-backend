@@ -17,6 +17,8 @@ import { NotFound } from '../errors/NotFound';
 import { InternalServerError } from '../errors/InternalServerError';
 import moment from 'moment';
 import { CategoryType } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { BadRequest } from '../errors/BadRequest';
 
 @injectable()
 export class BookRepository implements IBookRepository {
@@ -846,7 +848,7 @@ export class BookRepository implements IBookRepository {
     }
   }
 
-  async createBookAuthor(name: string): Promise<any> {
+  async createBookAuthor(name: string, profile: string): Promise<any> {
     try {
       // Get the database client
       const client = this._databaseService.Client();
@@ -854,7 +856,7 @@ export class BookRepository implements IBookRepository {
       const bookAuthore = await client.bookAuthor.create({
         data: {
           name,
-          profilePicture: '',
+          profilePicture: profile,
         },
       });
 
@@ -937,4 +939,58 @@ export class BookRepository implements IBookRepository {
       await this._databaseService.disconnect();
     }
   }
+
+  async deleteBookAuthor(id: bigint): Promise<boolean> {
+    try {
+      // Get the database client
+      const client = this._databaseService.Client();
+
+      const bookAuthore = await client.bookAuthor.delete({
+        where: {
+          id,
+        },
+      });
+
+      return bookAuthore !== null;
+    } catch (error) {
+      this._loggerService.getLogger().error(`Error ${error}`);
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new BadRequest('This author assign to somewhere');
+      }
+      throw new InternalServerError(
+        'An error occurred while interacting with the database.',
+      );
+    } finally {
+      await this._databaseService.disconnect();
+    }
+  }
+
+  // async getBookAuthor(id: bigint): Promise<any> {
+  //   try {
+  //     // Get the database client
+  //     const client = this._databaseService.Client();
+
+  //     const bookAuthore = await client.bookAuthor.findFirst({
+  //       where: {
+  //         id,
+  //       },
+  //     });
+
+  //     if (bookAuthore === null) {
+  //       throw new NotFound('BookAuthor Not found');
+  //     }
+
+  //     return bookAuthore;
+  //   } catch (error) {
+  //     this._loggerService.getLogger().error(`Error ${error}`);
+  //     if (error instanceof PrismaClientKnownRequestError) {
+  //       throw new BadRequest('This author assign to somewhere');
+  //     }
+  //     throw new InternalServerError(
+  //       'An error occurred while interacting with the database.',
+  //     );
+  //   } finally {
+  //     await this._databaseService.disconnect();
+  //   }
+  // }
 }

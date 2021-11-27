@@ -57,4 +57,12 @@ router.delete('/category/:id', (req, res) =>
   bookController.deleteBookCategory(req, res),
 );
 
+router.post('/autor', uploadBookTitleImage.single('titleImage'), (req, res) =>
+  bookController.createBookAuthor(req, res),
+);
+
+router.delete('/autor/:authorId', (req, res) =>
+  bookController.deleteBookAuthor(req, res),
+);
+
 export default router;

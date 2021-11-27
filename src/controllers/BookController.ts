@@ -397,4 +397,38 @@ export default class BookController extends BaseController {
       return this.sendErrorResponse(req, res, error);
     }
   }
+
+  async createBookAuthor(req: express.Request, res: express.Response) {
+    try {
+      const name = req.body.name;
+      const profile = req.file
+        ? `${ENV.APP_BASE_URL}:${ENV.PORT}${ENV.API_ROOT}/images/${req.file.filename}`
+        : 'no image';
+
+      const authore = await this._bookService.createBookAuthor(name, profile);
+
+      // Return response
+      return this.sendJSONResponse(res, null, null, authore);
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
+
+  async deleteBookAuthor(req: express.Request, res: express.Response) {
+    try {
+      const id = BigInt(req.params.authorId);
+
+      const author = await this._bookService.deleteBookAuthor(id);
+
+      // Return response
+      return this.sendJSONResponse(
+        res,
+        author ? 'Deleted Successfully' : 'Something went wrong',
+        null,
+        null,
+      );
+    } catch (error) {
+      return this.sendErrorResponse(req, res, error);
+    }
+  }
 }
