@@ -8,6 +8,7 @@ import { ILoggerService } from '../interfaces/ILoggerService';
 import {
   CreateBlogWriter,
   GetBlog,
+  GetBlogWithTotal,
   GetBlogWriter,
   NewBlog,
   UpdateBlog,
@@ -124,12 +125,16 @@ export class BlogRepository implements IBlogRepository {
     }
   }
 
-  async getAllBlog(): Promise<GetBlog[]> {
+  async getAllBlog(page: number, size: number): Promise<GetBlogWithTotal> {
     try {
       // Get the database client
       const client = this._databaseService.Client();
 
+      const totalBlog = await client.blog.count();
+
       const blog = await client.blog.findMany({
+        skip: size * (page - 1),
+        take: size,
         include: {
           BlogWriter: true,
         },
@@ -138,7 +143,7 @@ export class BlogRepository implements IBlogRepository {
         },
       });
 
-      return blog;
+      return { blog, metaData: { total: totalBlog } };
     } catch (error) {
       this._loggerService.getLogger().error(`Error ${error}`);
       if (error instanceof NotFound) {

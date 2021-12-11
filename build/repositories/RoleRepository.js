@@ -80,6 +80,7 @@ let RoleRepository = class RoleRepository {
                     id: true,
                     firstName: true,
                     lastName: true,
+                    profilePicture: true,
                     mobileNumber: true,
                     password: false,
                     userName: false,
@@ -90,6 +91,13 @@ let RoleRepository = class RoleRepository {
                     isSuspended: false,
                     createdAt: false,
                     updatedAt: false,
+                    isVerify: true,
+                    isSubscriptionComplete: true,
+                    UserSubscription: {
+                        select: {
+                            type: true,
+                        },
+                    },
                     UserRole: {
                         select: {
                             id: true,
@@ -109,8 +117,11 @@ let RoleRepository = class RoleRepository {
                 id: userRole.UserRole[0].id,
                 firstName: userRole.firstName,
                 lastName: userRole.lastName,
+                profilePicture: userRole.profilePicture,
                 mobileNumber: userRole.mobileNumber,
                 Role: userRole.UserRole[0].Role.name,
+                verify: userRole.isVerify,
+                subscriptionDone: userRole.isSubscriptionComplete,
             };
             return role;
         }

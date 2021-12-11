@@ -18,6 +18,14 @@ const SubscriptionRepository_1 = require("../repositories/SubscriptionRepository
 const SubscriptionService_1 = require("../services/SubscriptionService");
 const BookService_1 = require("../services/BookService");
 const BookRepository_1 = require("../repositories/BookRepository");
+const EventService_1 = require("../services/EventService");
+const EventRepository_1 = require("../repositories/EventRepository");
+const BlogService_1 = require("../services/BlogService");
+const BlogRepository_1 = require("../repositories/BlogRepository");
+const DiscussionService_1 = require("../services/DiscussionService");
+const DiscussionRepository_1 = require("../repositories/DiscussionRepository");
+const CategoryService_1 = require("../services/CategoryService");
+const CategoryRepository_1 = require("../repositories/CategoryRepository");
 const iocContainer = new inversify_1.Container();
 exports.iocContainer = iocContainer;
 // make inversify aware of inversify-binding-decorators
@@ -36,6 +44,12 @@ iocContainer
     .bind(types_1.TYPES.SubscriptionService)
     .to(SubscriptionService_1.SubscriptionService);
 iocContainer.bind(types_1.TYPES.BookService).to(BookService_1.BookService);
+iocContainer.bind(types_1.TYPES.EventService).to(EventService_1.EventService);
+iocContainer.bind(types_1.TYPES.BlogService).to(BlogService_1.BlogService);
+iocContainer
+    .bind(types_1.TYPES.DiscussionService)
+    .to(DiscussionService_1.DiscussionService);
+iocContainer.bind(types_1.TYPES.CategoryService).to(CategoryService_1.CategoryService);
 // iocContainer.bind<IRoleService>(TYPES.RoleService).to(RoleService);
 // iocContainer.bind<IOrganisationService>(TYPES.OrganisationService).to(OrganisationService);
 // iocContainer.bind<IPaymentService>(TYPES.PaymentService).to(PaymentService);
@@ -49,3 +63,11 @@ iocContainer
     .bind(types_1.TYPES.SubscriptionRepository)
     .to(SubscriptionRepository_1.SubscriptionRepository);
 iocContainer.bind(types_1.TYPES.BookRepository).to(BookRepository_1.BookRepository);
+iocContainer.bind(types_1.TYPES.EventRepository).to(EventRepository_1.EventRepository);
+iocContainer.bind(types_1.TYPES.BlogRepository).to(BlogRepository_1.BlogRepository);
+iocContainer
+    .bind(types_1.TYPES.DiscussionRepository)
+    .to(DiscussionRepository_1.DiscussionRepository);
+iocContainer
+    .bind(types_1.TYPES.CategoryRepository)
+    .to(CategoryRepository_1.CategoryRepository);

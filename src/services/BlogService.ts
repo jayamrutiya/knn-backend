@@ -10,6 +10,7 @@ import { IUserRepository } from '../interfaces/IUserRepository';
 import {
   CreateBlogWriter,
   GetBlog,
+  GetBlogWithTotal,
   GetBlogWriter,
   NewBlog,
   UpdateBlog,
@@ -53,8 +54,8 @@ export class BlogService implements IBlogService {
     return this._blogRepository.getBlog(blogId);
   }
 
-  async getAllBlog(): Promise<GetBlog[]> {
-    return this._blogRepository.getAllBlog();
+  async getAllBlog(page: number, size: number): Promise<GetBlogWithTotal> {
+    return this._blogRepository.getAllBlog(page, size);
   }
 
   async updateBlog(updateBlog: UpdateBlog): Promise<boolean> {

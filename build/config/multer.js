@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadBookTitleImage = void 0;
+exports.uploadProfilePicture = exports.uploadBookTitleImage = void 0;
 const multer_1 = __importDefault(require("multer"));
 const BadRequest_1 = require("../errors/BadRequest");
 const fileFilter = (req, file, cb) => {
@@ -20,6 +20,20 @@ exports.uploadBookTitleImage = multer_1.default({
     storage: multer_1.default.diskStorage({
         destination: function (req, file, cb) {
             cb(null, './src/public/images/');
+        },
+        filename: function (req, file, cb) {
+            cb(null, file.fieldname + Date.now() + '.png');
+        },
+    }),
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 1048576 * 5,
+    },
+});
+exports.uploadProfilePicture = multer_1.default({
+    storage: multer_1.default.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, './src/public/images/Profile/');
         },
         filename: function (req, file, cb) {
             cb(null, file.fieldname + Date.now() + '.png');

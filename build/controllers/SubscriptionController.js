@@ -11,6 +11,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const BaseController_1 = __importDefault(require("./BaseController"));
+const env_1 = __importDefault(require("../config/env"));
 let SubscriptionController = class SubscriptionController extends BaseController_1.default {
     constructor(loggerService, subscriptionService) {
         super();
@@ -48,16 +49,31 @@ let SubscriptionController = class SubscriptionController extends BaseController
     }
     async userBuySubscription(req, res) {
         try {
-            console.log('in userBuySubscription controller');
+            console.log('in userBuySubscription controller', req.body.bookName);
             // validate input
-            this.validateRequest(req);
-            const userId = BigInt(req.params.userId);
-            const subscriptionId = BigInt(req.params.subscriptionId);
-            const userSubscription = await this._subscriptionService.userBuySubscription(userId, subscriptionId);
+            // this.validateRequest(req);
+            console.log('files', req.files);
+            const files = req.files;
+            const fileData = [];
+            if (req.files) {
+                for (let i = 0; i < files.length; i++) {
+                    fileData.push(`${env_1.default.APP_BASE_URL}:${env_1.default.PORT}${env_1.default.API_ROOT}/images/${files[i].filename}`);
+                }
+            }
+            const { bookName, authorName, userId, subscriptionId } = req.body;
+            const userSubscription = {
+                bookName: bookName.map((book) => book.toString().toLowerCase()),
+                authorName: authorName.map((authore) => authore.toString().toLowerCase()),
+                titleImage: fileData,
+                userId: BigInt(userId),
+                subscriptionId: BigInt(subscriptionId),
+            };
+            console.log('userSubscription', userSubscription);
+            const usersubscription = await this._subscriptionService.userBuySubscription(userSubscription);
             //return response
-            return this.sendJSONResponse(res, userSubscription
+            return this.sendJSONResponse(res, usersubscription
                 ? 'User buy subscription successfully'
-                : 'Somthing went wrong', null, null);
+                : 'Somthing went wrong', null, usersubscription);
         }
         catch (error) {
             console.log(error, 'err');

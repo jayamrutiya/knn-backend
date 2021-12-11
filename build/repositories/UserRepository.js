@@ -32,6 +32,7 @@ let UserRepository = class UserRepository {
                 data: {
                     firstName: newUser.firstName,
                     lastName: newUser.lastName,
+                    profilePicture: newUser.profilePicture,
                     userName: newUser.userName,
                     mobileNumber: newUser.mobileNumber,
                     emailId: newUser.emailId,
@@ -46,6 +47,7 @@ let UserRepository = class UserRepository {
                     id: true,
                     firstName: true,
                     lastName: true,
+                    profilePicture: true,
                     userName: true,
                     mobileNumber: true,
                     emailId: true,
@@ -70,14 +72,19 @@ let UserRepository = class UserRepository {
     }
     async getUserByUserName(userName) {
         try {
+            console.log(userName);
             // Get the database client
             const client = this._databaseService.Client();
             const user = await client.user.findFirst({
                 where: {
-                    userName,
-                    OR: {
-                        emailId: userName,
-                    },
+                    OR: [
+                        {
+                            userName,
+                        },
+                        {
+                            emailId: userName,
+                        },
+                    ],
                 },
             });
             // if (user === null) {
@@ -173,6 +180,71 @@ let UserRepository = class UserRepository {
             await this._databaseService.disconnect();
         }
     }
+    async saveForgotPassword(userId, emailId, nonce) {
+        try {
+            // get the database client
+            const client = this._databaseService.Client();
+            // Store forgot password request
+            await client.forgotPassword.create({
+                data: {
+                    userId,
+                    emailId,
+                    nonce,
+                },
+            });
+        }
+        catch (error) {
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async getForgotPassword(userId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            // Return the forgot password request
+            return await client.forgotPassword.findFirst({
+                where: {
+                    userId,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+        }
+        catch (error) {
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async updatePassword(userId, password) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            // Update the password
+            await client.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    password,
+                },
+            });
+        }
+        catch (error) {
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
     async getRereshToken(userId, refreshToken) {
         try {
             // Get the database client
@@ -247,7 +319,17 @@ let UserRepository = class UserRepository {
                     quantity: true,
                     createdAt: true,
                     updatedAt: true,
-                    Book: true,
+                    Book: {
+                        include: {
+                            BookReview: true,
+                            BookAuthor: true,
+                            BookLikeDislike: {
+                                where: {
+                                    isLiked: true,
+                                },
+                            },
+                        },
+                    },
                 },
             });
             return cart;
@@ -286,6 +368,76 @@ let UserRepository = class UserRepository {
             await this._databaseService.disconnect();
         }
     }
+    async getCartById(cartId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const cartdata = await client.cart.findFirst({
+                where: {
+                    id: cartId,
+                },
+            });
+            return cartdata;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            // if (error instanceof NotFound) {
+            //   throw error;
+            // }
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async getCartByUserIdAndBookId(userId, bookId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const cartdata = await client.cart.findFirst({
+                where: {
+                    userId,
+                    bookId,
+                },
+            });
+            return cartdata;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            // if (error instanceof NotFound) {
+            //   throw error;
+            // }
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async deleteCartItem(cartId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const deleteCart = await client.cart.delete({
+                where: {
+                    id: cartId,
+                },
+            });
+            return deleteCart !== null;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            // if (error instanceof NotFound) {
+            //   throw error;
+            // }
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
     async createOrder(newOrder) {
         try {
             // Get the database client
@@ -293,6 +445,10 @@ let UserRepository = class UserRepository {
             const order = await client.order.create({
                 data: {
                     userId: newOrder.userId,
+                    firstName: newOrder.firstName,
+                    lastName: newOrder.lastName,
+                    emailId: newOrder.emailId,
+                    mobileNumber: newOrder.mobileNumber,
                     deliveryAddress: newOrder.deliveryAddress,
                     totalAmount: newOrder.totalAmount,
                 },
@@ -323,6 +479,27 @@ let UserRepository = class UserRepository {
                 }),
             });
             return orderDetail !== null;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async createUserCurrentBook(orderId, userId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const userCurrentBook = await client.userCurrentBook.create({
+                data: {
+                    orderId,
+                    userId,
+                },
+            });
+            return userCurrentBook !== null;
         }
         catch (error) {
             console.log(error);
@@ -408,6 +585,431 @@ let UserRepository = class UserRepository {
                 },
             });
             return userSubscriptionUsage !== null;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async verifyUser(userId, isVerify) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const userData = await client.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    isVerify,
+                },
+            });
+            return userData !== null;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async doneSubscriptionProcess(userId, isDone) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const userData = await client.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    isSubscriptionComplete: isDone,
+                },
+            });
+            return userData !== null;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async getUser(userId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const userData = await client.user.findFirst({
+                where: {
+                    id: userId,
+                },
+                include: {
+                    UserBook: {
+                        select: {
+                            Book: {
+                                include: {
+                                    BookAuthor: true,
+                                },
+                            },
+                        },
+                    },
+                    UserSubscription: {
+                        include: {
+                            UserSubscriptionUsage: true,
+                        },
+                    },
+                },
+            });
+            return userData;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async createUserBook(userId, bookId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const adduserBook = await client.userBook.create({
+                data: {
+                    userId,
+                    bookId,
+                },
+            });
+            return adduserBook;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async getUserLatestOrder(userId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const userOrder = await client.order.findFirst({
+                where: {
+                    userId,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+            return userOrder;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async getUserLastSuccessOrder(userId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const order = await client.order.findFirst({
+                where: {
+                    userId,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                take: 1,
+            });
+            return order;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async createBookExchangeLog(userId, previousOrderId, latestOrderId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const bookExchangeLog = await client.userBookExchangeLogs.create({
+                data: {
+                    userId,
+                    previousOrderId,
+                    latestOrderId,
+                },
+            });
+            return bookExchangeLog;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async getUserWithCount(userId) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const user = await client.user.findFirst({
+                where: {
+                    id: userId,
+                },
+                include: {
+                    UserBookExchangeLogs: true,
+                    EventRegistration: true,
+                    Discussion: true,
+                },
+            });
+            return user;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async updateUser(updateUser) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const updateuser = await client.user.update({
+                where: {
+                    id: updateUser.id,
+                },
+                data: {
+                    firstName: updateUser.firstName,
+                    mobileNumber: updateUser.mobileNumber,
+                    address: updateUser.address,
+                    profilePicture: updateUser.profilePicture,
+                },
+            });
+            return updateuser;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async newusers(isVerify) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const users = await client.user.findMany({
+                where: {
+                    isVerify,
+                    UserRole: {
+                        every: {
+                            Role: {
+                                name: isVerify ? 'Member' : 'User',
+                            },
+                        },
+                    },
+                },
+                include: {
+                    UserBook: {
+                        select: {
+                            Book: true,
+                        },
+                    },
+                    UserSubscription: true,
+                },
+            });
+            return users;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async changeSubscriptionStatus(userId, status) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const user = await client.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    isSubscriptionComplete: status,
+                },
+            });
+            return user !== null;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async deleteUserSubscription(id) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const userSubscriptionUsage = await client.userSubscriptionUsage.deleteMany({
+                where: {
+                    userSubscriptionId: id,
+                },
+            });
+            const userSubscription = await client.userSubscription.deleteMany({
+                where: {
+                    id,
+                },
+            });
+            return userSubscription !== null;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async getOrder(status) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const order = await client.order.findMany({
+                where: {
+                    status,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                include: {
+                    User: true,
+                },
+            });
+            return order;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async getOrderById(id) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const order = await client.order.findFirst({
+                where: {
+                    id,
+                    OR: [
+                        {
+                            status: 'PENDING',
+                        },
+                        {
+                            status: 'ONTHEWAY',
+                        },
+                        {
+                            status: 'CANCLE',
+                        },
+                        {
+                            status: 'DELIVERED',
+                        },
+                    ],
+                },
+                include: {
+                    OrderDetail: {
+                        include: {
+                            Book: {
+                                include: {
+                                    BookAuthor: true,
+                                },
+                            },
+                        },
+                    },
+                    User: {
+                        include: {
+                            UserBookExchangeLogs: {
+                                orderBy: {
+                                    createdAt: 'desc',
+                                },
+                                take: 1,
+                                include: {
+                                    PreviousOrder: {
+                                        include: {
+                                            OrderDetail: {
+                                                include: {
+                                                    Book: {
+                                                        include: {
+                                                            BookAuthor: true,
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+            return order;
+        }
+        catch (error) {
+            console.log(error);
+            this._loggerService.getLogger().error(`Error ${error}`);
+            throw new InternalServerError_1.InternalServerError('An error occurred while interacting with the database.');
+        }
+        finally {
+            await this._databaseService.disconnect();
+        }
+    }
+    async orderStatusChange(id, status) {
+        try {
+            // Get the database client
+            const client = this._databaseService.Client();
+            const order = await client.order.update({
+                where: {
+                    id,
+                },
+                data: {
+                    status,
+                },
+            });
+            return order !== null;
         }
         catch (error) {
             console.log(error);

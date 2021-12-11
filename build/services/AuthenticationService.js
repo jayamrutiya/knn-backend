@@ -19,16 +19,19 @@ const BadRequest_1 = require("../errors/BadRequest");
 const crypto_1 = __importDefault(require("crypto"));
 const env_1 = __importDefault(require("../config/env"));
 const NotFound_1 = require("../errors/NotFound");
+const express_1 = __importDefault(require("../config/express"));
+const events_1 = require("../config/events");
 let AuthenticationService = class AuthenticationService {
-    constructor(loggerService, jwtService, userRepository, roleRepository) {
+    constructor(loggerService, userRepository, jwtService, roleRepository) {
         this._loggerService = loggerService;
-        this._jwtService = jwtService;
         this._userRepository = userRepository;
+        this._jwtService = jwtService;
         this._roleRepository = roleRepository;
         this._loggerService.getLogger().info(`Creating: ${this.constructor.name}`);
     }
     async doLogin(userName, password) {
         const user = await this._userRepository.getUserByUserName(userName);
+        console.log(user);
         if (user === null) {
             throw new NotFound_1.NotFound(`User not found with userName ${userName}`);
         }
@@ -65,12 +68,72 @@ let AuthenticationService = class AuthenticationService {
         const accessToken = this._jwtService.generateToken(userRole, env_1.default.ACCESS_TOKEN_SECRET, env_1.default.ACCESS_TOKEN_EXPIRES_IN);
         return accessToken;
     }
+    async forgotPassword(emailId) {
+        // Get user with the given email address
+        const user = await this._userRepository.getUserByEmailId(emailId);
+        // If no user is present, throw error
+        if (!user) {
+            throw new NotFound_1.NotFound('No user found with given email address.');
+        }
+        // Create a new nonce to reset the password
+        const nonce = crypto_1.default.randomBytes(64).toString('hex');
+        console.log('nonce', nonce);
+        const hashedNonce = crypto_1.default
+            .pbkdf2Sync(nonce, user.salt, 1000, 64, 'sha512')
+            .toString('hex');
+        // Emit event to send email
+        express_1.default.emit(events_1.EventTypes.SEND_RESET_PASSWORD_EMAIL, {
+            userId: user.id,
+            emailId,
+            nonce,
+        });
+        // Store the forgot password request
+        await this._userRepository.saveForgotPassword(user.id, emailId, hashedNonce);
+        return true;
+    }
+    async resetPassword(userId, password, nonce) {
+        console.log(userId, password, nonce);
+        // Get user with the given email address
+        const user = await this._userRepository.getUserById(userId);
+        // If no user is present, throw error
+        if (!user) {
+            throw new NotFound_1.NotFound('No user found with given email address.');
+        }
+        // Get forgot password request
+        const forgotPassword = await this._userRepository.getForgotPassword(userId);
+        if (!forgotPassword) {
+            throw new BadRequest_1.BadRequest('Cannot find request to reset password for the given user.');
+        }
+        // Check if the nonce is valid
+        const hashedNonce = crypto_1.default
+            .pbkdf2Sync(nonce, user.salt, 1000, 64, 'sha512')
+            .toString('hex');
+        console.log('kjljjk', hashedNonce, '&', forgotPassword.nonce);
+        if (hashedNonce !== forgotPassword.nonce) {
+            throw new BadRequest_1.BadRequest('Invalid request to reset password');
+        }
+        // Save the new password
+        const hashedPassword = crypto_1.default
+            .pbkdf2Sync(password, user.salt, 1000, 64, 'sha512')
+            .toString('hex');
+        this._userRepository.updatePassword(userId, hashedPassword);
+        return true;
+    }
+    async getUpdatedTokens(userId) {
+        const userRole = await this._roleRepository.getUserRole(userId);
+        const accessToken = this._jwtService.generateToken(userRole, env_1.default.ACCESS_TOKEN_SECRET, env_1.default.ACCESS_TOKEN_EXPIRES_IN);
+        // Create a Refresh token
+        const refreshToken = this._jwtService.generateToken(userRole, env_1.default.REFRESH_TOKEN_SECRET, env_1.default.REFRESH_TOKEN_EXPIRES_IN);
+        await this._userRepository.storeRefreshToken(userId, refreshToken);
+        // Return token
+        return { accessToken, refreshToken };
+    }
 };
 AuthenticationService = __decorate([
     inversify_1.injectable(),
     __param(0, inversify_1.inject(types_1.TYPES.LoggerService)),
-    __param(1, inversify_1.inject(types_1.TYPES.JwtService)),
-    __param(2, inversify_1.inject(types_1.TYPES.UserRepository)),
+    __param(1, inversify_1.inject(types_1.TYPES.UserRepository)),
+    __param(2, inversify_1.inject(types_1.TYPES.JwtService)),
     __param(3, inversify_1.inject(types_1.TYPES.RoleRepository))
 ], AuthenticationService);
 exports.AuthenticationService = AuthenticationService;

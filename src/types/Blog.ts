@@ -10,6 +10,23 @@ export declare type GetBlog = {
   BlogWriter?: GetBlogWriter;
 };
 
+export declare type GetBlogWithTotal = {
+  metaData: {
+    total: number;
+  };
+  blog: {
+    id: bigint;
+    title: string;
+    subTitle: string;
+    body: string;
+    titleImage: string;
+    blogWriter: bigint;
+    createdAt: Date;
+    updatedAt: Date | null;
+    BlogWriter?: GetBlogWriter;
+  }[];
+};
+
 export declare type NewBlog = {
   // id: bigint;
   title: string;

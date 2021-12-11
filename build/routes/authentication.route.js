@@ -16,4 +16,7 @@ const authenticationController = new AuthenticationController_1.default(loggerSe
 router.post('/login', (req, res) => authenticationController.doLogin(req, res));
 // ToDo: validation
 router.post('/refresh', (req, res) => authenticationController.refreshToken(req, res));
+router.post('/password/forgot', (req, res) => authenticationController.forgotPassword(req, res));
+router.post('/password/reset', (req, res) => authenticationController.resetPassword(req, res));
+router.get('/:userId/tokens', (req, res) => authenticationController.getUpdatedTokens(req, res));
 exports.default = router;

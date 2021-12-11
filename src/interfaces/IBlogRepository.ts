@@ -1,6 +1,7 @@
 import {
   CreateBlogWriter,
   GetBlog,
+  GetBlogWithTotal,
   GetBlogWriter,
   NewBlog,
   UpdateBlog,
@@ -11,7 +12,7 @@ export interface IBlogRepository {
 
   getBlog(blogId: bigint): Promise<GetBlog>;
 
-  getAllBlog(): Promise<GetBlog[]>;
+  getAllBlog(page: number, size: number): Promise<GetBlogWithTotal>;
 
   updateBlog(updateBlog: UpdateBlog): Promise<boolean>;
 

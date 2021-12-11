@@ -53,6 +53,50 @@ let AuthenticationController = class AuthenticationController extends BaseContro
             this.sendErrorResponse(req, res, error);
         }
     }
+    async forgotPassword(req, res) {
+        try {
+            // Get the parameters
+            const { emailId } = req.body;
+            // Call the forgot password service
+            const result = await this._authenticationService.forgotPassword(emailId);
+            // Send the response
+            this.sendJSONResponse(res, result
+                ? 'An email has been sent. Please follow the instructions in the email to reset the password.'
+                : 'No user found with the given email address.', null, null);
+        }
+        catch (error) {
+            this.sendErrorResponse(req, res, error);
+        }
+    }
+    async resetPassword(req, res) {
+        try {
+            console.log('in reset pass controller');
+            // Get the parameters
+            const userId = req.query.userId === undefined || req.query.userId === null
+                ? 0n
+                : BigInt(req.query.userId);
+            const nonce = req.query.nonce === undefined ? '' : req.query.nonce.toString();
+            const { password } = req.body;
+            console.log(userId, password, nonce);
+            await this._authenticationService.resetPassword(userId, password, nonce);
+            this.sendJSONResponse(res, 'Password reset successfully!', null, null);
+        }
+        catch (error) {
+            this.sendErrorResponse(req, res, error);
+        }
+    }
+    async getUpdatedTokens(req, res) {
+        try {
+            const userId = BigInt(req.params.userId);
+            const user = await this._authenticationService.getUpdatedTokens(userId);
+            // send response
+            this.sendJSONResponse(res, 'Logged in successfully!', { size: 1 }, user);
+        }
+        catch (error) {
+            console.log(error);
+            return this.sendErrorResponse(req, res, error);
+        }
+    }
 };
 AuthenticationController = __decorate([
     inversify_1.injectable()

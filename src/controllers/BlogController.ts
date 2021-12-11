@@ -71,16 +71,24 @@ export default class BlogController extends BaseController {
 
   async getAllBlog(req: express.Request, res: express.Response) {
     try {
-      const blog = await this._blogService.getAllBlog();
+      const page =
+        typeof req.query.page === 'string' ? parseInt(req.query.page, 10) : 0;
+      const size =
+        typeof req.query.size === 'string' ? parseInt(req.query.size, 10) : 0;
+
+      const blog = await this._blogService.getAllBlog(page, size);
 
       // Return response
       return this.sendJSONResponse(
         res,
         null,
         {
-          length: blog.length,
+          page,
+          size,
+          length: blog.blog.length,
+          total: blog.metaData.total,
         },
-        blog,
+        blog.blog,
       );
     } catch (error) {
       return this.sendErrorResponse(req, res, error);
