@@ -132,16 +132,29 @@ export class BlogRepository implements IBlogRepository {
 
       const totalBlog = await client.blog.count();
 
-      const blog = await client.blog.findMany({
-        skip: size * (page - 1),
-        take: size,
-        include: {
-          BlogWriter: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      let blog;
+
+      if (page === 0 && size === 0) {
+        blog = await client.blog.findMany({
+          include: {
+            BlogWriter: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
+      } else {
+        blog = await client.blog.findMany({
+          skip: size * (page - 1),
+          take: size,
+          include: {
+            BlogWriter: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
+      }
 
       return { blog, metaData: { total: totalBlog } };
     } catch (error) {
